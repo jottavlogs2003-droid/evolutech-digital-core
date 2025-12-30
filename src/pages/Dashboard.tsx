@@ -17,7 +17,7 @@ const Dashboard: React.FC = () => {
 
   const isSuperAdmin = hasPermission(['SUPER_ADMIN_EVOLUTECH']);
   const isEvolutechTeam = hasPermission(['SUPER_ADMIN_EVOLUTECH', 'ADMIN_EVOLUTECH']);
-  const isClientAdmin = hasPermission(['ADMIN_CLIENTE']);
+  const isClientAdmin = hasPermission(['DONO_EMPRESA']);
 
   return (
     <div className="space-y-6">
@@ -30,7 +30,7 @@ const Dashboard: React.FC = () => {
           {isSuperAdmin && 'Visão geral completa da plataforma Evolutech Digital'}
           {!isSuperAdmin && isEvolutechTeam && 'Gerencie os clientes e projetos da Evolutech'}
           {isClientAdmin && `Gerencie sua empresa: ${user?.tenantName}`}
-          {user?.role === 'FUNCIONARIO' && 'Acesse suas ferramentas e tarefas'}
+          {user?.role === 'FUNCIONARIO_EMPRESA' && 'Acesse suas ferramentas e tarefas'}
         </p>
       </div>
 
@@ -122,7 +122,7 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {user?.role === 'FUNCIONARIO' && (
+      {user?.role === 'FUNCIONARIO_EMPRESA' && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <StatsCard
             title="Minhas Tarefas"
@@ -151,7 +151,7 @@ const Dashboard: React.FC = () => {
         <RecentActivity />
         {isEvolutechTeam && <TenantsList />}
         
-        {(isClientAdmin || user?.role === 'FUNCIONARIO') && (
+        {(isClientAdmin || user?.role === 'FUNCIONARIO_EMPRESA') && (
           <div className="glass rounded-xl p-6">
             <h3 className="text-lg font-semibold mb-4">Suas Ferramentas</h3>
             <div className="grid gap-3 sm:grid-cols-2">

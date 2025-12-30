@@ -28,10 +28,10 @@ interface Usuario {
 const usuarios: Usuario[] = [
   { id: '1', name: 'Super Admin', email: 'super@evolutech.com', role: 'SUPER_ADMIN_EVOLUTECH', isActive: true, lastLogin: 'Há 5 min', createdAt: '2023-01-01' },
   { id: '2', name: 'Admin Evolutech', email: 'admin@evolutech.com', role: 'ADMIN_EVOLUTECH', isActive: true, lastLogin: 'Há 1 hora', createdAt: '2023-02-15' },
-  { id: '3', name: 'João Silva', email: 'joao@empresaxyz.com', role: 'ADMIN_CLIENTE', tenantName: 'Empresa XYZ', isActive: true, lastLogin: 'Há 30 min', createdAt: '2024-01-10' },
-  { id: '4', name: 'Maria Santos', email: 'maria@empresaxyz.com', role: 'FUNCIONARIO', tenantName: 'Empresa XYZ', isActive: true, lastLogin: 'Há 2 horas', createdAt: '2024-02-20' },
-  { id: '5', name: 'Carlos Oliveira', email: 'carlos@techsolutions.com', role: 'ADMIN_CLIENTE', tenantName: 'Tech Solutions', isActive: true, lastLogin: 'Há 1 dia', createdAt: '2024-02-01' },
-  { id: '6', name: 'Ana Pereira', email: 'ana@techsolutions.com', role: 'FUNCIONARIO', tenantName: 'Tech Solutions', isActive: false, lastLogin: 'Há 1 semana', createdAt: '2024-03-05' },
+  { id: '3', name: 'João Silva', email: 'joao@empresaxyz.com', role: 'DONO_EMPRESA', tenantName: 'Empresa XYZ', isActive: true, lastLogin: 'Há 30 min', createdAt: '2024-01-10' },
+  { id: '4', name: 'Maria Santos', email: 'maria@empresaxyz.com', role: 'FUNCIONARIO_EMPRESA', tenantName: 'Empresa XYZ', isActive: true, lastLogin: 'Há 2 horas', createdAt: '2024-02-20' },
+  { id: '5', name: 'Carlos Oliveira', email: 'carlos@techsolutions.com', role: 'DONO_EMPRESA', tenantName: 'Tech Solutions', isActive: true, lastLogin: 'Há 1 dia', createdAt: '2024-02-01' },
+  { id: '6', name: 'Ana Pereira', email: 'ana@techsolutions.com', role: 'FUNCIONARIO_EMPRESA', tenantName: 'Tech Solutions', isActive: false, lastLogin: 'Há 1 semana', createdAt: '2024-03-05' },
 ];
 
 const Usuarios: React.FC = () => {
@@ -48,7 +48,7 @@ const Usuarios: React.FC = () => {
     // Filter based on role permissions
     if (!isEvolutechTeam) {
       // Client admins only see users from their tenant
-      return matchesSearch && (usuario.role === 'FUNCIONARIO' || usuario.role === 'ADMIN_CLIENTE');
+      return matchesSearch && (usuario.role === 'FUNCIONARIO_EMPRESA' || usuario.role === 'DONO_EMPRESA');
     }
     
     return matchesSearch;

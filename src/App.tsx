@@ -48,7 +48,7 @@ const App = () => (
               <Route 
                 path="/usuarios" 
                 element={
-                  <ProtectedRoute allowedRoles={['SUPER_ADMIN_EVOLUTECH', 'ADMIN_EVOLUTECH', 'ADMIN_CLIENTE']}>
+                  <ProtectedRoute allowedRoles={['SUPER_ADMIN_EVOLUTECH', 'ADMIN_EVOLUTECH', 'DONO_EMPRESA']}>
                     <Usuarios />
                   </ProtectedRoute>
                 } 
@@ -56,7 +56,7 @@ const App = () => (
               <Route 
                 path="/configuracoes" 
                 element={
-                  <ProtectedRoute allowedRoles={['SUPER_ADMIN_EVOLUTECH', 'ADMIN_EVOLUTECH', 'ADMIN_CLIENTE']}>
+                  <ProtectedRoute allowedRoles={['SUPER_ADMIN_EVOLUTECH', 'ADMIN_EVOLUTECH', 'DONO_EMPRESA']}>
                     <Configuracoes />
                   </ProtectedRoute>
                 } 

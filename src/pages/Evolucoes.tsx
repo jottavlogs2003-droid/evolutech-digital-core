@@ -78,7 +78,7 @@ const prioridadeColors = {
 
 export default function Evolucoes() {
   const { user } = useAuth();
-  const { logAction } = useAuditLog();
+  const { logAudit } = useAuditLog();
   const { toast } = useToast();
   const [evolucoes, setEvolucoes] = useState<Evolucao[]>([]);
   const [loading, setLoading] = useState(true);
@@ -105,7 +105,7 @@ export default function Evolucoes() {
     if (error) {
       toast({ title: 'Erro ao carregar evoluções', variant: 'destructive' });
     } else {
-      setEvolucoes(data || []);
+      setEvolucoes((data || []) as Evolucao[]);
     }
     setLoading(false);
   };
@@ -129,7 +129,7 @@ export default function Evolucoes() {
     if (error) {
       toast({ title: 'Erro ao criar solicitação', variant: 'destructive' });
     } else {
-      await logAction('create', 'evolucoes', data.id, formData);
+      await logAudit({ action: 'create', entityType: 'evolucoes', entityId: data.id, details: formData });
       toast({ title: 'Solicitação criada com sucesso' });
       fetchEvolucoes();
     }
@@ -147,7 +147,7 @@ export default function Evolucoes() {
     if (error) {
       toast({ title: 'Erro ao atualizar status', variant: 'destructive' });
     } else {
-      await logAction('update', 'evolucoes', evolucao.id, { status: newStatus });
+      await logAudit({ action: 'update', entityType: 'evolucoes', entityId: evolucao.id, details: { status: newStatus } });
       toast({ title: 'Status atualizado' });
       fetchEvolucoes();
     }

@@ -66,7 +66,7 @@ const statusLabels = {
 
 export default function Suporte() {
   const { user } = useAuth();
-  const { logAction } = useAuditLog();
+  const { logAudit } = useAuditLog();
   const { toast } = useToast();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,17 +87,15 @@ export default function Suporte() {
   }, [user]);
 
   const fetchTickets = async () => {
-    let query = supabase
+    const { data, error } = await supabase
       .from('tickets_suporte')
-      .select('*, profiles(full_name, email), companies(name)')
+      .select('*, companies(name)')
       .order('created_at', { ascending: false });
-
-    const { data, error } = await query;
 
     if (error) {
       toast({ title: 'Erro ao carregar tickets', variant: 'destructive' });
     } else {
-      setTickets(data || []);
+      setTickets((data || []) as unknown as Ticket[]);
     }
     setLoading(false);
   };
@@ -118,7 +116,7 @@ export default function Suporte() {
     if (error) {
       toast({ title: 'Erro ao criar ticket', variant: 'destructive' });
     } else {
-      await logAction('create', 'tickets_suporte', data.id, formData);
+      await logAudit({ action: 'create', entityType: 'tickets_suporte', entityId: data.id, details: formData });
       toast({ title: 'Ticket criado com sucesso' });
       fetchTickets();
     }
@@ -141,7 +139,7 @@ export default function Suporte() {
     if (error) {
       toast({ title: 'Erro ao responder', variant: 'destructive' });
     } else {
-      await logAction('update', 'tickets_suporte', selectedTicket.id, { resposta, status: 'resolvido' });
+      await logAudit({ action: 'update', entityType: 'tickets_suporte', entityId: selectedTicket.id, details: { resposta, status: 'resolvido' } });
       toast({ title: 'Resposta enviada' });
       fetchTickets();
       setSelectedTicket(null);
@@ -158,7 +156,7 @@ export default function Suporte() {
     if (error) {
       toast({ title: 'Erro ao atualizar status', variant: 'destructive' });
     } else {
-      await logAction('update', 'tickets_suporte', ticket.id, { status: newStatus });
+      await logAudit({ action: 'update', entityType: 'tickets_suporte', entityId: ticket.id, details: { status: newStatus } });
       toast({ title: 'Status atualizado' });
       fetchTickets();
     }
