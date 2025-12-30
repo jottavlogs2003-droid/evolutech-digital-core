@@ -61,7 +61,7 @@ const tipoLabels = {
 
 export default function Treinamentos() {
   const { user } = useAuth();
-  const { logAction } = useAuditLog();
+  const { logAudit } = useAuditLog();
   const { toast } = useToast();
   const [treinamentos, setTreinamentos] = useState<Treinamento[]>([]);
   const [progressos, setProgressos] = useState<Map<string, Progresso>>(new Map());
@@ -94,7 +94,7 @@ export default function Treinamentos() {
     if (error) {
       toast({ title: 'Erro ao carregar treinamentos', variant: 'destructive' });
     } else {
-      setTreinamentos(data || []);
+      setTreinamentos((data || []) as Treinamento[]);
     }
     setLoading(false);
   };
@@ -132,7 +132,7 @@ export default function Treinamentos() {
     if (error) {
       toast({ title: 'Erro ao criar treinamento', variant: 'destructive' });
     } else {
-      await logAction('create', 'treinamentos', data.id, formData);
+      await logAudit({ action: 'create', entityType: 'treinamentos', entityId: data.id, details: formData });
       toast({ title: 'Treinamento criado com sucesso' });
       fetchTreinamentos();
     }

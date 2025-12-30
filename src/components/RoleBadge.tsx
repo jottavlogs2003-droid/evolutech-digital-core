@@ -11,8 +11,8 @@ interface RoleBadgeProps {
 const roleStyles: Record<UserRole, string> = {
   SUPER_ADMIN_EVOLUTECH: 'bg-role-super-admin/20 text-role-super-admin border-role-super-admin/30',
   ADMIN_EVOLUTECH: 'bg-role-admin-evolutech/20 text-role-admin-evolutech border-role-admin-evolutech/30',
-  ADMIN_CLIENTE: 'bg-role-client-admin/20 text-role-client-admin border-role-client-admin/30',
-  FUNCIONARIO: 'bg-role-employee/20 text-role-employee border-role-employee/30',
+  DONO_EMPRESA: 'bg-role-client-admin/20 text-role-client-admin border-role-client-admin/30',
+  FUNCIONARIO_EMPRESA: 'bg-role-employee/20 text-role-employee border-role-employee/30',
 };
 
 export const RoleBadge: React.FC<RoleBadgeProps> = ({ role, size = 'md', className }) => {

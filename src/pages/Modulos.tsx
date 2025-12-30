@@ -46,7 +46,7 @@ interface Modulo {
 
 export default function Modulos() {
   const { user } = useAuth();
-  const { logAction } = useAuditLog();
+  const { logAudit } = useAuditLog();
   const { toast } = useToast();
   const [modulos, setModulos] = useState<Modulo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,7 +59,7 @@ export default function Modulos() {
     icone: '',
     preco_mensal: 0,
     is_core: false,
-    status: 'active' as const,
+    status: 'active' as 'active' | 'inactive' | 'pending',
   });
 
   const isSuperAdmin = user?.role === 'SUPER_ADMIN_EVOLUTECH';
@@ -95,7 +95,7 @@ export default function Modulos() {
       if (error) {
         toast({ title: 'Erro ao atualizar', variant: 'destructive' });
       } else {
-        await logAction('update', 'modulos', selectedModulo.id, formData);
+        await logAudit({ action: 'update', entityType: 'modulos', entityId: selectedModulo.id, details: formData });
         toast({ title: 'Módulo atualizado com sucesso' });
         fetchModulos();
       }
@@ -109,7 +109,7 @@ export default function Modulos() {
       if (error) {
         toast({ title: 'Erro ao criar', variant: 'destructive' });
       } else {
-        await logAction('create', 'modulos', data.id, formData);
+        await logAudit({ action: 'create', entityType: 'modulos', entityId: data.id, details: formData });
         toast({ title: 'Módulo criado com sucesso' });
         fetchModulos();
       }
@@ -138,7 +138,7 @@ export default function Modulos() {
     if (error) {
       toast({ title: 'Erro ao excluir', variant: 'destructive' });
     } else {
-      await logAction('delete', 'modulos', modulo.id, { nome: modulo.nome });
+      await logAudit({ action: 'delete', entityType: 'modulos', entityId: modulo.id, details: { nome: modulo.nome } });
       toast({ title: 'Módulo excluído' });
       fetchModulos();
     }
@@ -153,7 +153,7 @@ export default function Modulos() {
       icone: modulo.icone || '',
       preco_mensal: modulo.preco_mensal,
       is_core: modulo.is_core,
-      status: modulo.status,
+      status: modulo.status as 'active' | 'inactive' | 'pending',
     });
     setIsDialogOpen(true);
   };

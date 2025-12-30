@@ -50,7 +50,7 @@ interface Modulo {
 
 export default function SistemasBase() {
   const { user } = useAuth();
-  const { logAction } = useAuditLog();
+  const { logAudit } = useAuditLog();
   const { toast } = useToast();
   const [sistemas, setSistemas] = useState<SistemaBase[]>([]);
   const [modulos, setModulos] = useState<Modulo[]>([]);
@@ -64,7 +64,7 @@ export default function SistemasBase() {
     descricao: '',
     nicho: '',
     versao: '1.0.0',
-    status: 'active' as const,
+    status: 'active' as 'active' | 'inactive' | 'pending',
   });
 
   const isSuperAdmin = user?.role === 'SUPER_ADMIN_EVOLUTECH';
@@ -117,7 +117,7 @@ export default function SistemasBase() {
       if (error) {
         toast({ title: 'Erro ao atualizar', variant: 'destructive' });
       } else {
-        await logAction('update', 'sistemas_base', selectedSistema.id, formData);
+        await logAudit({ action: 'update', entityType: 'sistemas_base', entityId: selectedSistema.id, details: formData });
         toast({ title: 'Sistema atualizado com sucesso' });
         fetchSistemas();
       }
@@ -131,7 +131,7 @@ export default function SistemasBase() {
       if (error) {
         toast({ title: 'Erro ao criar', variant: 'destructive' });
       } else {
-        await logAction('create', 'sistemas_base', data.id, formData);
+        await logAudit({ action: 'create', entityType: 'sistemas_base', entityId: data.id, details: formData });
         toast({ title: 'Sistema criado com sucesso' });
         fetchSistemas();
       }
@@ -155,7 +155,7 @@ export default function SistemasBase() {
     if (error) {
       toast({ title: 'Erro ao excluir', variant: 'destructive' });
     } else {
-      await logAction('delete', 'sistemas_base', sistema.id, { nome: sistema.nome });
+      await logAudit({ action: 'delete', entityType: 'sistemas_base', entityId: sistema.id, details: { nome: sistema.nome } });
       toast({ title: 'Sistema excluído' });
       fetchSistemas();
     }
@@ -181,7 +181,7 @@ export default function SistemasBase() {
       await supabase.from('sistema_base_modulos').insert(inserts);
     }
 
-    await logAction('update', 'sistema_base_modulos', selectedSistema.id, { modulos: selectedModulos });
+    await logAudit({ action: 'update', entityType: 'sistema_base_modulos', entityId: selectedSistema.id, details: { modulos: selectedModulos } });
     toast({ title: 'Módulos atualizados' });
     setIsModulosDialogOpen(false);
   };
@@ -193,7 +193,7 @@ export default function SistemasBase() {
       descricao: sistema.descricao || '',
       nicho: sistema.nicho,
       versao: sistema.versao,
-      status: sistema.status,
+      status: sistema.status as 'active' | 'inactive' | 'pending',
     });
     setIsDialogOpen(true);
   };
