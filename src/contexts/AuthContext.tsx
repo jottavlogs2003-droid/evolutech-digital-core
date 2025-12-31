@@ -1,24 +1,56 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { User as AppUser, UserRole, AuthState, dbRoleToUserRole, DbRole } from '@/types/auth';
+import { User as AppUser, UserRole, AuthState, dbRoleToUserRole, DbRole, Company } from '@/types/auth';
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, fullName: string) => Promise<void>;
   logout: () => Promise<void>;
   hasPermission: (requiredRoles: UserRole[]) => boolean;
+  company: Company | null;
+  isEvolutechUser: boolean;
+  isCompanyUser: boolean;
+  getRedirectPath: () => string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
+  const [company, setCompany] = useState<Company | null>(null);
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     isAuthenticated: false,
     isLoading: true,
   });
+
+  const fetchCompanyData = useCallback(async (companyId: string): Promise<Company | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('companies')
+        .select('*')
+        .eq('id', companyId)
+        .single();
+      
+      if (error || !data) return null;
+      
+      return {
+        id: data.id,
+        name: data.name,
+        slug: data.slug,
+        plan: data.plan,
+        status: data.status,
+        monthly_revenue: data.monthly_revenue || 0,
+        logo_url: data.logo_url || undefined,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      };
+    } catch (error) {
+      console.error('Error fetching company data:', error);
+      return null;
+    }
+  }, []);
 
   const fetchUserData = useCallback(async (userId: string, email: string): Promise<AppUser | null> => {
     try {
@@ -41,7 +73,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const role = dbRoleToUserRole(roleData.role as DbRole);
-      const company = roleData.companies as { name: string } | null;
+      const companyInfo = roleData.companies as { name: string } | null;
+
+      // Fetch company data if user belongs to a company
+      if (roleData.company_id) {
+        const companyData = await fetchCompanyData(roleData.company_id);
+        setCompany(companyData);
+      } else {
+        setCompany(null);
+      }
 
       return {
         id: userId,
@@ -49,7 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: profile?.full_name || email,
         role,
         tenantId: roleData.company_id || undefined,
-        tenantName: company?.name || undefined,
+        tenantName: companyInfo?.name || undefined,
         avatar: profile?.avatar_url || undefined,
         createdAt: new Date(profile?.created_at || Date.now()),
       };
@@ -57,7 +97,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Error fetching user data:', error);
       return null;
     }
-  }, []);
+  }, [fetchCompanyData]);
+
+  // Get redirect path based on role
+  const getRedirectPath = useCallback((): string => {
+    if (!authState.user) return '/login';
+    
+    switch (authState.user.role) {
+      case 'SUPER_ADMIN_EVOLUTECH':
+        return '/admin-evolutech';
+      case 'ADMIN_EVOLUTECH':
+        return '/admin-evolutech/operacional';
+      case 'DONO_EMPRESA':
+        return '/empresa/dashboard';
+      case 'FUNCIONARIO_EMPRESA':
+        return '/empresa/app';
+      default:
+        return '/login';
+    }
+  }, [authState.user]);
+
+  // Check if user is Evolutech team
+  const isEvolutechUser = authState.user?.role === 'SUPER_ADMIN_EVOLUTECH' || 
+                          authState.user?.role === 'ADMIN_EVOLUTECH';
+
+  // Check if user is company user
+  const isCompanyUser = authState.user?.role === 'DONO_EMPRESA' || 
+                        authState.user?.role === 'FUNCIONARIO_EMPRESA';
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -81,6 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isAuthenticated: false,
             isLoading: false,
           });
+          setCompany(null);
         }
       }
     );
@@ -147,6 +214,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isAuthenticated: false,
       isLoading: false,
     });
+    setCompany(null);
   }, []);
 
   const hasPermission = useCallback((requiredRoles: UserRole[]) => {
@@ -155,7 +223,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [authState.user]);
 
   return (
-    <AuthContext.Provider value={{ ...authState, login, signup, logout, hasPermission }}>
+    <AuthContext.Provider value={{ 
+      ...authState, 
+      login, 
+      signup, 
+      logout, 
+      hasPermission,
+      company,
+      isEvolutechUser,
+      isCompanyUser,
+      getRedirectPath,
+    }}>
       {children}
     </AuthContext.Provider>
   );
