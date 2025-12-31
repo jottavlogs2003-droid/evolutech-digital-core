@@ -66,10 +66,10 @@ const Login: React.FC = () => {
       
       if (isSignup) {
         await signup(email, password, fullName);
-        toast.success('Conta criada! Você já pode fazer login.');
-        setIsSignup(false);
-        setPassword('');
-        setConfirmPassword('');
+        // Auto-login after signup
+        await login(email, password);
+        toast.success('Conta criada com sucesso!');
+        // Redirect will be handled by useEffect when isAuthenticated changes
       } else {
         await login(email, password);
         toast.success('Login realizado com sucesso!');

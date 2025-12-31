@@ -12,14 +12,15 @@ import { EmpresaLayout } from "@/components/layouts/EmpresaLayout";
 // Public pages
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import AcceptInvite from "./pages/AcceptInvite";
 import NotFound from "./pages/NotFound";
 
 // Admin Evolutech pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import GestaoSistemasBase from "./pages/admin/GestaoSistemasBase";
 import Empresas from "./pages/Empresas";
 import Usuarios from "./pages/Usuarios";
 import Configuracoes from "./pages/Configuracoes";
-import SistemasBase from "./pages/SistemasBase";
 import Modulos from "./pages/Modulos";
 import Suporte from "./pages/Suporte";
 import Evolucoes from "./pages/Evolucoes";
@@ -31,6 +32,7 @@ import Logs from "./pages/Logs";
 // Empresa pages
 import EmpresaDashboard from "./pages/empresa/EmpresaDashboard";
 import EmpresaApp from "./pages/empresa/EmpresaApp";
+import ConvitesEquipe from "./pages/empresa/ConvitesEquipe";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +47,7 @@ const App = () => (
             {/* Public Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/aceitar-convite" element={<AcceptInvite />} />
             
             {/* Role-based redirect after login */}
             <Route path="/redirect" element={<RoleRedirect />} />
@@ -66,7 +69,7 @@ const App = () => (
               <Route path="/admin-evolutech" element={<AdminDashboard />} />
               <Route path="/admin-evolutech/operacional" element={<AdminDashboard />} />
               <Route path="/admin-evolutech/empresas" element={<Empresas />} />
-              <Route path="/admin-evolutech/sistemas-base" element={<SistemasBase />} />
+              <Route path="/admin-evolutech/sistemas-base" element={<GestaoSistemasBase />} />
               <Route path="/admin-evolutech/modulos" element={<Modulos />} />
               <Route path="/admin-evolutech/usuarios" element={<Usuarios />} />
               <Route path="/admin-evolutech/suporte" element={<Suporte />} />
@@ -127,14 +130,14 @@ const App = () => (
               
               {/* Dono Empresa Only */}
               <Route 
-                path="/empresa/usuarios" 
+                path="/empresa/equipe" 
                 element={
                   <AuthGuard allowedRoles={['DONO_EMPRESA']}>
-                    <Usuarios />
+                    <ConvitesEquipe />
                   </AuthGuard>
                 } 
               />
-              <Route 
+              <Route
                 path="/empresa/financeiro" 
                 element={
                   <AuthGuard allowedRoles={['DONO_EMPRESA']}>
