@@ -19,8 +19,10 @@ const schema = z.object({
 });
 
 interface InviteData {
+  id: string;
   email: string;
   role: string;
+  company_id: string | null;
   company_name?: string;
 }
 
@@ -48,7 +50,7 @@ const AcceptInvite: React.FC = () => {
 
       const { data, error } = await supabase
         .from('invitations')
-        .select('email, role, companies(name)')
+        .select('id, email, role, company_id, companies(name)')
         .eq('token', token)
         .eq('status', 'pending')
         .maybeSingle();
@@ -59,10 +61,25 @@ const AcceptInvite: React.FC = () => {
         return;
       }
 
+      // Check if expired
+      const { data: fullInvite } = await supabase
+        .from('invitations')
+        .select('expires_at')
+        .eq('id', data.id)
+        .single();
+
+      if (fullInvite && new Date(fullInvite.expires_at) < new Date()) {
+        toast.error('Este convite expirou');
+        navigate('/login');
+        return;
+      }
+
       const company = data.companies as { name: string } | null;
       setInviteData({
+        id: data.id,
         email: data.email,
         role: data.role,
+        company_id: data.company_id,
         company_name: company?.name,
       });
       setIsLoading(false);
@@ -96,18 +113,61 @@ const AcceptInvite: React.FC = () => {
 
       if (authError) throw authError;
 
-      // Mark invite as used via edge function would be ideal
-      // For now, the trigger will handle role assignment
+      if (!authData.user) {
+        throw new Error('Erro ao criar usuário');
+      }
+
+      // Assign role to the user
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .insert({
+          user_id: authData.user.id,
+          role: inviteData.role as any,
+          company_id: inviteData.company_id,
+        });
+
+      if (roleError) {
+        console.error('Error assigning role:', roleError);
+        // Continue anyway, the user is created
+      }
+
+      // Update invitation status to active
+      await supabase
+        .from('invitations')
+        .update({ status: 'active' })
+        .eq('id', inviteData.id);
+
+      // Auto-login the user
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email: inviteData.email,
+        password,
+      });
+
+      if (loginError) {
+        // If login fails, show success and redirect to login
+        setIsComplete(true);
+        toast.success('Conta criada com sucesso!');
+        setTimeout(() => navigate('/login'), 3000);
+        return;
+      }
       
-      setIsComplete(true);
-      toast.success('Conta criada com sucesso!');
+      // Login successful, redirect based on role
+      toast.success('Conta criada com sucesso! Redirecionando...');
       
-      setTimeout(() => {
-        navigate('/login');
-      }, 3000);
+      // Determine redirect path based on role
+      const redirectPath = inviteData.role === 'dono_empresa' 
+        ? '/empresa/dashboard' 
+        : '/empresa/app';
+      
+      setTimeout(() => navigate(redirectPath), 1500);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erro ao criar conta';
-      toast.error(message);
+      if (message.includes('already registered')) {
+        toast.error('Este email já está cadastrado. Faça login.');
+        navigate('/login');
+      } else {
+        toast.error(message);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -130,8 +190,8 @@ const AcceptInvite: React.FC = () => {
         <div className="relative z-10 w-full max-w-md animate-slide-up">
           <div className="glass rounded-2xl p-8 shadow-elevated text-center">
             <div className="mb-6 flex justify-center">
-              <div className="h-16 w-16 rounded-full bg-role-client-admin/20 flex items-center justify-center">
-                <CheckCircle className="h-8 w-8 text-role-client-admin" />
+              <div className="h-16 w-16 rounded-full bg-green-500/20 flex items-center justify-center">
+                <CheckCircle className="h-8 w-8 text-green-500" />
               </div>
             </div>
             <h1 className="text-2xl font-bold mb-2">Conta criada!</h1>
@@ -159,7 +219,7 @@ const AcceptInvite: React.FC = () => {
             <div className="mb-6 flex justify-center">
               <Logo size="lg" />
             </div>
-            <h1 className="text-2xl font-bold">Bem-vindo à Evolutech!</h1>
+            <h1 className="text-2xl font-bold">Bem-vindo!</h1>
             <p className="mt-2 text-muted-foreground">
               Complete seu cadastro para acessar o sistema
             </p>
@@ -252,6 +312,17 @@ const AcceptInvite: React.FC = () => {
               )}
             </Button>
           </form>
+
+          <div className="mt-6 text-center text-sm">
+            <span className="text-muted-foreground">Já tem uma conta?</span>{' '}
+            <button
+              type="button"
+              onClick={() => navigate('/login')}
+              className="text-primary hover:underline font-medium"
+            >
+              Fazer login
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -20,6 +20,7 @@ import {
   GraduationCap,
   CreditCard,
   Building2,
+  UserPlus,
 } from 'lucide-react';
 
 interface NavItem {
@@ -31,11 +32,12 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/empresa/dashboard' },
-  { icon: Users, label: 'Equipe', path: '/empresa/usuarios', ownerOnly: true },
-  { icon: HeadphonesIcon, label: 'Suporte', path: '/empresa/suporte', moduleCode: 'suporte' },
-  { icon: GraduationCap, label: 'Treinamentos', path: '/empresa/treinamentos', moduleCode: 'treinamentos' },
-  { icon: CreditCard, label: 'Financeiro', path: '/empresa/financeiro', moduleCode: 'financeiro', ownerOnly: true },
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/empresa/dashboard', ownerOnly: true },
+  { icon: LayoutDashboard, label: 'Aplicativo', path: '/empresa/app' },
+  { icon: UserPlus, label: 'Equipe', path: '/empresa/equipe', ownerOnly: true },
+  { icon: HeadphonesIcon, label: 'Suporte', path: '/empresa/suporte' },
+  { icon: GraduationCap, label: 'Treinamentos', path: '/empresa/treinamentos' },
+  { icon: CreditCard, label: 'Financeiro', path: '/empresa/financeiro', ownerOnly: true },
   { icon: Settings, label: 'Configurações', path: '/empresa/configuracoes', ownerOnly: true },
 ];
 
