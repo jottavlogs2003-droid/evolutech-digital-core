@@ -2,18 +2,35 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { AuthGuard } from "@/components/guards/AuthGuard";
+import { RoleRedirect } from "@/components/guards/RoleRedirect";
+import { AdminEvolutechLayout } from "@/components/layouts/AdminEvolutechLayout";
+import { EmpresaLayout } from "@/components/layouts/EmpresaLayout";
 
+// Public pages
 import Index from "./pages/Index";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import NotFound from "./pages/NotFound";
+
+// Admin Evolutech pages
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import Empresas from "./pages/Empresas";
 import Usuarios from "./pages/Usuarios";
 import Configuracoes from "./pages/Configuracoes";
-import NotFound from "./pages/NotFound";
+import SistemasBase from "./pages/SistemasBase";
+import Modulos from "./pages/Modulos";
+import Suporte from "./pages/Suporte";
+import Evolucoes from "./pages/Evolucoes";
+import Treinamentos from "./pages/Treinamentos";
+import MetricasGlobais from "./pages/MetricasGlobais";
+import Financeiro from "./pages/Financeiro";
+import Logs from "./pages/Logs";
+
+// Empresa pages
+import EmpresaDashboard from "./pages/empresa/EmpresaDashboard";
+import EmpresaApp from "./pages/empresa/EmpresaApp";
 
 const queryClient = new QueryClient();
 
@@ -25,44 +42,132 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             
-            {/* Protected Routes with Dashboard Layout */}
+            {/* Role-based redirect after login */}
+            <Route path="/redirect" element={<RoleRedirect />} />
+            
+            {/* Legacy dashboard route - redirect to role-based route */}
+            <Route path="/dashboard" element={<RoleRedirect />} />
+            
+            {/* ============================================ */}
+            {/* ADMIN EVOLUTECH ROUTES                       */}
+            {/* Super Admin & Admin Evolutech only           */}
+            {/* ============================================ */}
             <Route
               element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
+                <AuthGuard allowedRoles={['SUPER_ADMIN_EVOLUTECH', 'ADMIN_EVOLUTECH']}>
+                  <AdminEvolutechLayout />
+                </AuthGuard>
               }
             >
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/admin-evolutech" element={<AdminDashboard />} />
+              <Route path="/admin-evolutech/operacional" element={<AdminDashboard />} />
+              <Route path="/admin-evolutech/empresas" element={<Empresas />} />
+              <Route path="/admin-evolutech/sistemas-base" element={<SistemasBase />} />
+              <Route path="/admin-evolutech/modulos" element={<Modulos />} />
+              <Route path="/admin-evolutech/usuarios" element={<Usuarios />} />
+              <Route path="/admin-evolutech/suporte" element={<Suporte />} />
+              <Route path="/admin-evolutech/evolucoes" element={<Evolucoes />} />
+              <Route path="/admin-evolutech/treinamentos" element={<Treinamentos />} />
+              <Route path="/admin-evolutech/logs" element={<Logs />} />
+              <Route path="/admin-evolutech/configuracoes" element={<Configuracoes />} />
+              
+              {/* Super Admin Only */}
               <Route 
-                path="/empresas" 
+                path="/admin-evolutech/metricas" 
                 element={
-                  <ProtectedRoute allowedRoles={['SUPER_ADMIN_EVOLUTECH', 'ADMIN_EVOLUTECH']}>
-                    <Empresas />
-                  </ProtectedRoute>
+                  <AuthGuard allowedRoles={['SUPER_ADMIN_EVOLUTECH']}>
+                    <MetricasGlobais />
+                  </AuthGuard>
                 } 
               />
               <Route 
-                path="/usuarios" 
+                path="/admin-evolutech/financeiro" 
                 element={
-                  <ProtectedRoute allowedRoles={['SUPER_ADMIN_EVOLUTECH', 'ADMIN_EVOLUTECH', 'DONO_EMPRESA']}>
-                    <Usuarios />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/configuracoes" 
-                element={
-                  <ProtectedRoute allowedRoles={['SUPER_ADMIN_EVOLUTECH', 'ADMIN_EVOLUTECH', 'DONO_EMPRESA']}>
-                    <Configuracoes />
-                  </ProtectedRoute>
+                  <AuthGuard allowedRoles={['SUPER_ADMIN_EVOLUTECH']}>
+                    <Financeiro />
+                  </AuthGuard>
                 } 
               />
             </Route>
 
+            {/* ============================================ */}
+            {/* EMPRESA ROUTES                               */}
+            {/* Dono Empresa & Funcionário only              */}
+            {/* ============================================ */}
+            <Route
+              element={
+                <AuthGuard allowedRoles={['DONO_EMPRESA', 'FUNCIONARIO_EMPRESA']} requireCompany>
+                  <EmpresaLayout />
+                </AuthGuard>
+              }
+            >
+              {/* Dono Empresa Dashboard */}
+              <Route 
+                path="/empresa/dashboard" 
+                element={
+                  <AuthGuard allowedRoles={['DONO_EMPRESA']}>
+                    <EmpresaDashboard />
+                  </AuthGuard>
+                } 
+              />
+              
+              {/* Funcionário App */}
+              <Route 
+                path="/empresa/app" 
+                element={<EmpresaApp />} 
+              />
+              
+              {/* Common empresa routes */}
+              <Route path="/empresa/suporte" element={<Suporte />} />
+              <Route path="/empresa/treinamentos" element={<Treinamentos />} />
+              
+              {/* Dono Empresa Only */}
+              <Route 
+                path="/empresa/usuarios" 
+                element={
+                  <AuthGuard allowedRoles={['DONO_EMPRESA']}>
+                    <Usuarios />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/empresa/financeiro" 
+                element={
+                  <AuthGuard allowedRoles={['DONO_EMPRESA']}>
+                    <Financeiro />
+                  </AuthGuard>
+                } 
+              />
+              <Route 
+                path="/empresa/configuracoes" 
+                element={
+                  <AuthGuard allowedRoles={['DONO_EMPRESA']}>
+                    <Configuracoes />
+                  </AuthGuard>
+                } 
+              />
+            </Route>
+
+            {/* ============================================ */}
+            {/* LEGACY ROUTES - Redirect to new structure    */}
+            {/* ============================================ */}
+            <Route path="/empresas" element={<Navigate to="/admin-evolutech/empresas" replace />} />
+            <Route path="/usuarios" element={<Navigate to="/admin-evolutech/usuarios" replace />} />
+            <Route path="/sistemas-base" element={<Navigate to="/admin-evolutech/sistemas-base" replace />} />
+            <Route path="/modulos" element={<Navigate to="/admin-evolutech/modulos" replace />} />
+            <Route path="/suporte" element={<Navigate to="/admin-evolutech/suporte" replace />} />
+            <Route path="/evolucoes" element={<Navigate to="/admin-evolutech/evolucoes" replace />} />
+            <Route path="/treinamentos" element={<Navigate to="/admin-evolutech/treinamentos" replace />} />
+            <Route path="/metricas" element={<Navigate to="/admin-evolutech/metricas" replace />} />
+            <Route path="/financeiro" element={<Navigate to="/admin-evolutech/financeiro" replace />} />
+            <Route path="/logs" element={<Navigate to="/admin-evolutech/logs" replace />} />
+            <Route path="/configuracoes" element={<Navigate to="/admin-evolutech/configuracoes" replace />} />
+
+            {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
