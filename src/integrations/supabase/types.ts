@@ -69,6 +69,7 @@ export type Database = {
           monthly_revenue: number | null
           name: string
           plan: Database["public"]["Enums"]["plan_type"]
+          sistema_base_id: string | null
           slug: string
           status: Database["public"]["Enums"]["entity_status"]
           updated_at: string
@@ -80,6 +81,7 @@ export type Database = {
           monthly_revenue?: number | null
           name: string
           plan?: Database["public"]["Enums"]["plan_type"]
+          sistema_base_id?: string | null
           slug: string
           status?: Database["public"]["Enums"]["entity_status"]
           updated_at?: string
@@ -91,11 +93,20 @@ export type Database = {
           monthly_revenue?: number | null
           name?: string
           plan?: Database["public"]["Enums"]["plan_type"]
+          sistema_base_id?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["entity_status"]
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "companies_sistema_base_id_fkey"
+            columns: ["sistema_base_id"]
+            isOneToOne: false
+            referencedRelation: "sistemas_base"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       empresa_modulos: {
         Row: {
@@ -106,6 +117,7 @@ export type Database = {
           empresa_id: string
           id: string
           modulo_id: string
+          obrigatorio: boolean | null
           updated_at: string
         }
         Insert: {
@@ -116,6 +128,7 @@ export type Database = {
           empresa_id: string
           id?: string
           modulo_id: string
+          obrigatorio?: boolean | null
           updated_at?: string
         }
         Update: {
@@ -126,6 +139,7 @@ export type Database = {
           empresa_id?: string
           id?: string
           modulo_id?: string
+          obrigatorio?: boolean | null
           updated_at?: string
         }
         Relationships: [
