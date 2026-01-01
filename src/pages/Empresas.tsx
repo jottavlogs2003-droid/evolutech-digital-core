@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -46,6 +46,8 @@ import {
   Trash2,
   Power,
   PowerOff,
+  Upload,
+  ImageIcon,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -54,6 +56,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
+interface SistemaBase {
+  id: string;
+  nome: string;
+  nicho: string;
+}
 
 const planColors = {
   starter: 'bg-muted text-muted-foreground border-border',
@@ -64,17 +72,23 @@ const planColors = {
 const Empresas: React.FC = () => {
   const { user } = useAuth();
   const { logAudit } = useAuditLog();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [empresas, setEmpresas] = useState<Company[]>([]);
+  const [sistemasBase, setSistemasBase] = useState<SistemaBase[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
     plan: 'starter' as 'starter' | 'professional' | 'enterprise',
     monthly_revenue: 0,
+    sistema_base_id: '' as string,
   });
 
   const fetchEmpresas = async () => {
@@ -92,8 +106,19 @@ const Empresas: React.FC = () => {
     setIsLoading(false);
   };
 
+  const fetchSistemasBase = async () => {
+    const { data } = await supabase
+      .from('sistemas_base')
+      .select('id, nome, nicho')
+      .eq('status', 'active')
+      .order('nome');
+    
+    setSistemasBase(data || []);
+  };
+
   useEffect(() => {
     fetchEmpresas();
+    fetchSistemasBase();
   }, []);
 
   const filteredEmpresas = empresas.filter(empresa =>
@@ -108,11 +133,15 @@ const Empresas: React.FC = () => {
         slug: company.slug,
         plan: company.plan,
         monthly_revenue: company.monthly_revenue,
+        sistema_base_id: (company as any).sistema_base_id || '',
       });
+      setLogoPreview(company.logo_url || null);
     } else {
       setSelectedCompany(null);
-      setFormData({ name: '', slug: '', plan: 'starter', monthly_revenue: 0 });
+      setFormData({ name: '', slug: '', plan: 'starter', monthly_revenue: 0, sistema_base_id: '' });
+      setLogoPreview(null);
     }
+    setLogoFile(null);
     setIsDialogOpen(true);
   };
 
@@ -125,6 +154,42 @@ const Empresas: React.FC = () => {
       .replace(/(^-|-$)/g, '');
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error('A imagem deve ter no máximo 2MB');
+        return;
+      }
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onload = () => setLogoPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadLogo = async (companyId: string): Promise<string | null> => {
+    if (!logoFile) return null;
+    
+    const fileExt = logoFile.name.split('.').pop();
+    const fileName = `${companyId}/logo.${fileExt}`;
+    
+    const { error } = await supabase.storage
+      .from('company-logos')
+      .upload(fileName, logoFile, { upsert: true });
+    
+    if (error) {
+      console.error('Error uploading logo:', error);
+      return null;
+    }
+    
+    const { data } = supabase.storage
+      .from('company-logos')
+      .getPublicUrl(fileName);
+    
+    return data.publicUrl;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -134,9 +199,17 @@ const Empresas: React.FC = () => {
     }
 
     const slug = formData.slug || generateSlug(formData.name);
+    setIsUploading(true);
 
     try {
       if (selectedCompany) {
+        let logoUrl = selectedCompany.logo_url;
+        
+        if (logoFile) {
+          const uploadedUrl = await uploadLogo(selectedCompany.id);
+          if (uploadedUrl) logoUrl = uploadedUrl;
+        }
+
         const { error } = await supabase
           .from('companies')
           .update({
@@ -144,6 +217,8 @@ const Empresas: React.FC = () => {
             slug,
             plan: formData.plan,
             monthly_revenue: formData.monthly_revenue,
+            logo_url: logoUrl,
+            sistema_base_id: formData.sistema_base_id || null,
           })
           .eq('id', selectedCompany.id);
 
@@ -165,11 +240,23 @@ const Empresas: React.FC = () => {
             slug,
             plan: formData.plan,
             monthly_revenue: formData.monthly_revenue,
+            sistema_base_id: formData.sistema_base_id || null,
           }])
           .select()
           .single();
 
         if (error) throw error;
+
+        // Upload logo after company is created
+        if (logoFile && data) {
+          const logoUrl = await uploadLogo(data.id);
+          if (logoUrl) {
+            await supabase
+              .from('companies')
+              .update({ logo_url: logoUrl })
+              .eq('id', data.id);
+          }
+        }
 
         await logAudit({
           action: 'create',
@@ -186,6 +273,8 @@ const Empresas: React.FC = () => {
     } catch (error) {
       console.error('Error saving company:', error);
       toast.error('Erro ao salvar empresa');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -332,9 +421,17 @@ const Empresas: React.FC = () => {
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                          <Building2 className="h-5 w-5" />
-                        </div>
+                        {empresa.logo_url ? (
+                          <img 
+                            src={empresa.logo_url} 
+                            alt={empresa.name} 
+                            className="h-10 w-10 rounded-lg object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                            <Building2 className="h-5 w-5" />
+                          </div>
+                        )}
                         <div>
                           <p className="font-medium">{empresa.name}</p>
                           <p className="text-sm text-muted-foreground">{empresa.slug}</p>
@@ -428,6 +525,43 @@ const Empresas: React.FC = () => {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Logo Upload */}
+            <div className="space-y-2">
+              <Label>Logo da Empresa</Label>
+              <div className="flex items-center gap-4">
+                <div 
+                  className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-dashed border-border bg-secondary/30 cursor-pointer hover:bg-secondary/50 transition-colors overflow-hidden"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {logoPreview ? (
+                    <img src={logoPreview} alt="Logo" className="h-full w-full object-cover" />
+                  ) : (
+                    <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="gap-2"
+                  >
+                    <Upload className="h-4 w-4" />
+                    Escolher Imagem
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-1">PNG, JPG até 2MB</p>
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="name">Nome da empresa</Label>
               <Input
@@ -452,23 +586,45 @@ const Empresas: React.FC = () => {
                 placeholder="empresa-exemplo"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="plan">Plano</Label>
-              <Select
-                value={formData.plan}
-                onValueChange={(value: 'starter' | 'professional' | 'enterprise') => 
-                  setFormData({ ...formData, plan: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="starter">Starter</SelectItem>
-                  <SelectItem value="professional">Professional</SelectItem>
-                  <SelectItem value="enterprise">Enterprise</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="plan">Plano</Label>
+                <Select
+                  value={formData.plan}
+                  onValueChange={(value: 'starter' | 'professional' | 'enterprise') => 
+                    setFormData({ ...formData, plan: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="starter">Starter</SelectItem>
+                    <SelectItem value="professional">Professional</SelectItem>
+                    <SelectItem value="enterprise">Enterprise</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sistema_base">Sistema Base</Label>
+                <Select
+                  value={formData.sistema_base_id}
+                  onValueChange={(value) => 
+                    setFormData({ ...formData, sistema_base_id: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sistemasBase.map((sb) => (
+                      <SelectItem key={sb.id} value={sb.id}>
+                        {sb.nome} ({sb.nicho})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="revenue">Receita Mensal (R$)</Label>
@@ -484,8 +640,8 @@ const Empresas: React.FC = () => {
               <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Cancelar
               </Button>
-              <Button type="submit" variant="glow">
-                {selectedCompany ? 'Salvar' : 'Criar'}
+              <Button type="submit" variant="glow" disabled={isUploading}>
+                {isUploading ? 'Salvando...' : selectedCompany ? 'Salvar' : 'Criar'}
               </Button>
             </DialogFooter>
           </form>

@@ -29,6 +29,7 @@ export interface Company {
   status: 'active' | 'inactive' | 'pending';
   monthly_revenue: number;
   logo_url?: string;
+  sistema_base_id?: string;
   created_at: string;
   updated_at: string;
   employee_count?: number;
@@ -78,6 +79,7 @@ export interface EmpresaModulo {
   empresa_id: string;
   modulo_id: string;
   ativo: boolean;
+  obrigatorio: boolean;
   data_ativacao: string;
   data_desativacao?: string;
   created_at: string;
