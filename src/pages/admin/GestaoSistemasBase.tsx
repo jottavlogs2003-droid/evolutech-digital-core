@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAuditLog } from '@/hooks/useAuditLog';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,7 +16,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Select,
@@ -39,9 +38,14 @@ import {
   Package, 
   Settings2, 
   Save,
-  ChevronRight,
   CheckCircle,
-  AlertCircle
+  Sparkles,
+  Calendar,
+  UtensilsCrossed,
+  Briefcase,
+  GraduationCap,
+  Layers,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface SistemaBase {
@@ -69,20 +73,54 @@ interface SistemaModulo {
   is_default: boolean;
 }
 
-const NICHOS = [
-  'Restaurante',
-  'Clínica',
-  'Academia',
-  'Serviços',
-  'Varejo',
-  'Educação',
-  'Imobiliária',
-  'Contabilidade',
-  'Advocacia',
-  'Saúde',
-  'Beleza',
-  'Outro',
-];
+// Tipos de sistema com configurações padrão
+type TipoSistema = 'Agendamentos' | 'Restaurante' | 'Comercial' | 'Educacional' | 'Genérico';
+
+interface TipoSistemaConfig {
+  icon: React.ReactNode;
+  descricao: string;
+  coreModulos: string[];
+  opcionaisModulos: string[];
+  color: string;
+}
+
+const TIPOS_SISTEMA: Record<TipoSistema, TipoSistemaConfig> = {
+  Agendamentos: {
+    icon: <Calendar className="h-5 w-5" />,
+    descricao: 'Sistema completo para gestão de agendamentos, horários e atendimentos. Ideal para clínicas, salões, consultórios e prestadores de serviço.',
+    coreModulos: ['DASHBOARD', 'USUARIOS', 'AGENDAMENTOS', 'CLIENTES'],
+    opcionaisModulos: ['FINANCEIRO', 'PAGAMENTOS', 'NOTIFICACOES', 'RELATORIOS'],
+    color: 'bg-blue-500',
+  },
+  Restaurante: {
+    icon: <UtensilsCrossed className="h-5 w-5" />,
+    descricao: 'Sistema para gestão de restaurantes, bares, lanchonetes e food service. Controle de pedidos, cardápio digital e mesas.',
+    coreModulos: ['DASHBOARD', 'USUARIOS', 'CARDAPIO', 'PEDIDOS', 'MESAS'],
+    opcionaisModulos: ['DELIVERY', 'ESTOQUE', 'FINANCEIRO', 'FIDELIDADE', 'RELATORIOS'],
+    color: 'bg-orange-500',
+  },
+  Comercial: {
+    icon: <Briefcase className="h-5 w-5" />,
+    descricao: 'Sistema para gestão comercial e vendas. Ideal para lojas, representantes comerciais e prestadores de serviço.',
+    coreModulos: ['DASHBOARD', 'USUARIOS', 'CLIENTES', 'FINANCEIRO'],
+    opcionaisModulos: ['CRM', 'CONTRATOS', 'SUPORTE', 'RELATORIOS'],
+    color: 'bg-green-500',
+  },
+  Educacional: {
+    icon: <GraduationCap className="h-5 w-5" />,
+    descricao: 'Sistema para instituições de ensino, cursos online e treinamentos. Gestão de alunos, cursos e matrículas.',
+    coreModulos: ['DASHBOARD', 'USUARIOS', 'CURSOS', 'ALUNOS', 'MATRICULAS'],
+    opcionaisModulos: ['CERTIFICADOS', 'FINANCEIRO', 'AVALIACOES', 'SUPORTE'],
+    color: 'bg-purple-500',
+  },
+  Genérico: {
+    icon: <Layers className="h-5 w-5" />,
+    descricao: 'Sistema base flexível para qualquer tipo de negócio. Personalize conforme sua necessidade.',
+    coreModulos: ['DASHBOARD', 'USUARIOS'],
+    opcionaisModulos: [], // Will show all available modules
+    color: 'bg-gray-500',
+  },
+};
 
 export default function GestaoSistemasBase() {
   const { user } = useAuth();
@@ -94,8 +132,9 @@ export default function GestaoSistemasBase() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedSistema, setSelectedSistema] = useState<SistemaBase | null>(null);
   const [sistemaModulos, setSistemaModulos] = useState<SistemaModulo[]>([]);
-  const [activeTab, setActiveTab] = useState('info');
+  const [activeTab, setActiveTab] = useState('tipo');
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedTipo, setSelectedTipo] = useState<TipoSistema | null>(null);
   
   const [formData, setFormData] = useState({
     nome: '',
@@ -130,6 +169,7 @@ export default function GestaoSistemasBase() {
     const { data } = await supabase
       .from('modulos')
       .select('*')
+      .eq('status', 'active')
       .order('is_core', { ascending: false })
       .order('nome');
     setModulos(data || []);
@@ -144,6 +184,41 @@ export default function GestaoSistemasBase() {
     setSistemaModulos(data || []);
   };
 
+  // Apply template when tipo is selected
+  const applyTemplate = useCallback((tipo: TipoSistema) => {
+    const config = TIPOS_SISTEMA[tipo];
+    
+    // Set description
+    setFormData(prev => ({
+      ...prev,
+      nicho: tipo,
+      descricao: config.descricao,
+    }));
+
+    // Set modules
+    const newModulos: SistemaModulo[] = [];
+    
+    // Add core modules as default (obrigatório)
+    config.coreModulos.forEach(codigo => {
+      const modulo = modulos.find(m => m.codigo === codigo);
+      if (modulo) {
+        newModulos.push({ modulo_id: modulo.id, is_default: true });
+      }
+    });
+
+    // Add optional modules as non-default
+    const opcionais = tipo === 'Genérico' 
+      ? modulos.filter(m => !config.coreModulos.includes(m.codigo))
+      : modulos.filter(m => config.opcionaisModulos.includes(m.codigo));
+
+    opcionais.forEach(modulo => {
+      newModulos.push({ modulo_id: modulo.id, is_default: false });
+    });
+
+    setSistemaModulos(newModulos);
+    setSelectedTipo(tipo);
+  }, [modulos]);
+
   const openEditSistema = async (sistema: SistemaBase) => {
     setSelectedSistema(sistema);
     setFormData({
@@ -153,6 +228,13 @@ export default function GestaoSistemasBase() {
       versao: sistema.versao,
       status: sistema.status,
     });
+    
+    // Try to match existing nicho to tipo
+    const matchedTipo = Object.keys(TIPOS_SISTEMA).find(
+      t => t.toLowerCase() === sistema.nicho.toLowerCase()
+    ) as TipoSistema | undefined;
+    setSelectedTipo(matchedTipo || null);
+    
     await fetchSistemaModulos(sistema.id);
     setActiveTab('info');
     setIsDialogOpen(true);
@@ -168,7 +250,8 @@ export default function GestaoSistemasBase() {
       status: 'active',
     });
     setSistemaModulos([]);
-    setActiveTab('info');
+    setSelectedTipo(null);
+    setActiveTab('tipo');
     setIsDialogOpen(true);
   };
 
@@ -183,7 +266,6 @@ export default function GestaoSistemasBase() {
       let sistemaId = selectedSistema?.id;
 
       if (selectedSistema) {
-        // Update existing
         const { error } = await supabase
           .from('sistemas_base')
           .update(formData)
@@ -198,7 +280,6 @@ export default function GestaoSistemasBase() {
           details: formData 
         });
       } else {
-        // Create new
         const { data, error } = await supabase
           .from('sistemas_base')
           .insert(formData)
@@ -218,13 +299,11 @@ export default function GestaoSistemasBase() {
 
       // Save modules
       if (sistemaId) {
-        // Delete existing
         await supabase
           .from('sistema_base_modulos')
           .delete()
           .eq('sistema_base_id', sistemaId);
 
-        // Insert new
         if (sistemaModulos.length > 0) {
           const inserts = sistemaModulos.map(sm => ({
             sistema_base_id: sistemaId,
@@ -280,6 +359,15 @@ export default function GestaoSistemasBase() {
   };
 
   const toggleModulo = (moduloId: string) => {
+    const modulo = modulos.find(m => m.id === moduloId);
+    const isCore = selectedTipo && TIPOS_SISTEMA[selectedTipo]?.coreModulos.includes(modulo?.codigo || '');
+    
+    // Core modules cannot be removed
+    if (isCore) {
+      toast({ title: 'Módulos Core não podem ser removidos', variant: 'destructive' });
+      return;
+    }
+    
     setSistemaModulos(prev => {
       const exists = prev.find(sm => sm.modulo_id === moduloId);
       if (exists) {
@@ -291,6 +379,15 @@ export default function GestaoSistemasBase() {
   };
 
   const toggleModuloDefault = (moduloId: string) => {
+    const modulo = modulos.find(m => m.id === moduloId);
+    const isCore = selectedTipo && TIPOS_SISTEMA[selectedTipo]?.coreModulos.includes(modulo?.codigo || '');
+    
+    // Core modules are always default
+    if (isCore) {
+      toast({ title: 'Módulos Core são sempre obrigatórios', variant: 'destructive' });
+      return;
+    }
+    
     setSistemaModulos(prev => 
       prev.map(sm => 
         sm.modulo_id === moduloId 
@@ -306,8 +403,14 @@ export default function GestaoSistemasBase() {
   const isModuloDefault = (moduloId: string) => 
     sistemaModulos.find(sm => sm.modulo_id === moduloId)?.is_default || false;
 
+  const isModuloCore = (modulo: Modulo) => 
+    selectedTipo && TIPOS_SISTEMA[selectedTipo]?.coreModulos.includes(modulo.codigo);
+
   const formatCurrency = (value: number) => 
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+
+  const coreCount = sistemaModulos.filter(sm => sm.is_default).length;
+  const optionalCount = sistemaModulos.filter(sm => !sm.is_default).length;
 
   return (
     <div className="space-y-6">
@@ -388,63 +491,74 @@ export default function GestaoSistemasBase() {
             </CardContent>
           </Card>
         ) : (
-          sistemas.map((sistema) => (
-            <Card key={sistema.id} className="relative overflow-hidden group">
-              <div className={`absolute top-0 left-0 right-0 h-1 ${
-                sistema.status === 'active' ? 'bg-green-500' : 
-                sistema.status === 'inactive' ? 'bg-red-500' : 'bg-yellow-500'
-              }`} />
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      {sistema.nome}
-                    </CardTitle>
-                    <CardDescription>{sistema.descricao || 'Sem descrição'}</CardDescription>
+          sistemas.map((sistema) => {
+            const tipoConfig = TIPOS_SISTEMA[sistema.nicho as TipoSistema];
+            return (
+              <Card key={sistema.id} className="relative overflow-hidden group">
+                <div className={`absolute top-0 left-0 right-0 h-1 ${
+                  tipoConfig?.color || (sistema.status === 'active' ? 'bg-green-500' : 
+                  sistema.status === 'inactive' ? 'bg-red-500' : 'bg-yellow-500')
+                }`} />
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${tipoConfig?.color || 'bg-primary'} text-white`}>
+                        {tipoConfig?.icon || <Blocks className="h-5 w-5" />}
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">{sistema.nome}</CardTitle>
+                        <CardDescription className="line-clamp-2">
+                          {sistema.descricao || 'Sem descrição'}
+                        </CardDescription>
+                      </div>
+                    </div>
                   </div>
-                  <Badge variant="outline">{sistema.nicho}</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Versão</span>
-                  <span className="font-mono">{sistema.versao}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Status</span>
-                  <Badge variant={sistema.status === 'active' ? 'default' : 'secondary'}>
-                    {sistema.status === 'active' ? 'Ativo' : 
-                     sistema.status === 'inactive' ? 'Inativo' : 'Pendente'}
-                  </Badge>
-                </div>
-                <div className="flex gap-2 pt-2">
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={() => openEditSistema(sistema)}
-                  >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Editar
-                  </Button>
-                  {isSuperAdmin && (
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Tipo</span>
+                    <Badge variant="outline">{sistema.nicho}</Badge>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Versão</span>
+                    <span className="font-mono">{sistema.versao}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Status</span>
+                    <Badge variant={sistema.status === 'active' ? 'default' : 'secondary'}>
+                      {sistema.status === 'active' ? 'Ativo' : 
+                       sistema.status === 'inactive' ? 'Inativo' : 'Pendente'}
+                    </Badge>
+                  </div>
+                  <div className="flex gap-2 pt-2">
                     <Button 
-                      variant="destructive" 
-                      size="icon"
-                      onClick={() => handleDelete(sistema)}
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => openEditSistema(sistema)}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Edit className="h-4 w-4 mr-2" />
+                      Editar
                     </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))
+                    {isSuperAdmin && (
+                      <Button 
+                        variant="destructive" 
+                        size="icon"
+                        onClick={() => handleDelete(sistema)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })
         )}
       </div>
 
       {/* Edit/Create Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Blocks className="h-5 w-5" />
@@ -453,7 +567,11 @@ export default function GestaoSistemasBase() {
           </DialogHeader>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="tipo" className="gap-2" disabled={!!selectedSistema}>
+                <Sparkles className="h-4 w-4" />
+                Tipo
+              </TabsTrigger>
               <TabsTrigger value="info" className="gap-2">
                 <Settings2 className="h-4 w-4" />
                 Informações
@@ -464,6 +582,71 @@ export default function GestaoSistemasBase() {
               </TabsTrigger>
             </TabsList>
 
+            {/* Tab: Tipo de Sistema */}
+            <TabsContent value="tipo" className="space-y-4 mt-4">
+              <div className="text-center mb-6">
+                <h3 className="text-lg font-semibold mb-2">Escolha o tipo de sistema</h3>
+                <p className="text-sm text-muted-foreground">
+                  Selecione um tipo para carregar automaticamente os módulos ideais
+                </p>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {(Object.keys(TIPOS_SISTEMA) as TipoSistema[]).map((tipo) => {
+                  const config = TIPOS_SISTEMA[tipo];
+                  const isSelected = selectedTipo === tipo;
+                  
+                  return (
+                    <button
+                      key={tipo}
+                      type="button"
+                      onClick={() => applyTemplate(tipo)}
+                      className={`p-4 rounded-xl border-2 text-left transition-all hover:shadow-lg ${
+                        isSelected 
+                          ? 'border-primary bg-primary/5 shadow-lg' 
+                          : 'border-border hover:border-primary/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className={`p-2 rounded-lg ${config.color} text-white`}>
+                          {config.icon}
+                        </div>
+                        <div className="font-semibold">{tipo}</div>
+                        {isSelected && (
+                          <CheckCircle className="h-5 w-5 text-primary ml-auto" />
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {config.descricao}
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-1">
+                        {config.coreModulos.slice(0, 3).map(codigo => (
+                          <Badge key={codigo} variant="secondary" className="text-xs">
+                            {codigo}
+                          </Badge>
+                        ))}
+                        {config.coreModulos.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{config.coreModulos.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {selectedTipo && (
+                <div className="flex justify-end pt-4">
+                  <Button onClick={() => setActiveTab('info')} className="gap-2">
+                    Próximo: Informações
+                    <Settings2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+
+            {/* Tab: Informações */}
             <TabsContent value="info" className="space-y-4 mt-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
@@ -476,17 +659,27 @@ export default function GestaoSistemasBase() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="nicho">Nicho *</Label>
+                  <Label htmlFor="nicho">Tipo / Nicho *</Label>
                   <Select
                     value={formData.nicho}
-                    onValueChange={(v) => setFormData({ ...formData, nicho: v })}
+                    onValueChange={(v) => {
+                      setFormData({ ...formData, nicho: v });
+                      if (Object.keys(TIPOS_SISTEMA).includes(v)) {
+                        applyTemplate(v as TipoSistema);
+                      }
+                    }}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o nicho" />
+                      <SelectValue placeholder="Selecione o tipo" />
                     </SelectTrigger>
                     <SelectContent>
-                      {NICHOS.map(nicho => (
-                        <SelectItem key={nicho} value={nicho}>{nicho}</SelectItem>
+                      {(Object.keys(TIPOS_SISTEMA) as TipoSistema[]).map(tipo => (
+                        <SelectItem key={tipo} value={tipo}>
+                          <div className="flex items-center gap-2">
+                            {TIPOS_SISTEMA[tipo].icon}
+                            {tipo}
+                          </div>
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -533,11 +726,31 @@ export default function GestaoSistemasBase() {
                   </Select>
                 </div>
               </div>
+
+              <div className="flex justify-between pt-4">
+                {!selectedSistema && (
+                  <Button variant="outline" onClick={() => setActiveTab('tipo')} className="gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    Voltar: Tipo
+                  </Button>
+                )}
+                <Button onClick={() => setActiveTab('modulos')} className="gap-2 ml-auto">
+                  Próximo: Módulos
+                  <Package className="h-4 w-4" />
+                </Button>
+              </div>
             </TabsContent>
 
+            {/* Tab: Módulos */}
             <TabsContent value="modulos" className="space-y-4 mt-4">
-              <div className="text-sm text-muted-foreground mb-4">
-                Selecione os módulos que fazem parte deste sistema. Marque como "Obrigatório" os módulos que devem estar sempre ativos.
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-sm text-muted-foreground">
+                  Selecione os módulos. Módulos <strong>Core</strong> não podem ser desativados pelos clientes.
+                </div>
+                <div className="flex gap-2">
+                  <Badge variant="default">{coreCount} Core</Badge>
+                  <Badge variant="outline">{optionalCount} Opcionais</Badge>
+                </div>
               </div>
 
               {modulos.length === 0 ? (
@@ -549,28 +762,35 @@ export default function GestaoSistemasBase() {
                   {modulos.map((modulo) => {
                     const isSelected = isModuloSelected(modulo.id);
                     const isDefault = isModuloDefault(modulo.id);
+                    const isCore = isModuloCore(modulo);
                     
                     return (
                       <div
                         key={modulo.id}
                         className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
                           isSelected 
-                            ? 'bg-primary/5 border-primary' 
-                            : 'hover:bg-secondary/50'
+                            ? isCore
+                              ? 'bg-primary/10 border-primary' 
+                              : 'bg-secondary/50 border-primary/50'
+                            : 'hover:bg-secondary/30'
                         }`}
                       >
                         <div className="flex items-center gap-4">
                           <Checkbox
                             checked={isSelected}
                             onCheckedChange={() => toggleModulo(modulo.id)}
+                            disabled={isCore}
                           />
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="font-medium">{modulo.nome}</span>
-                              {modulo.is_core && (
-                                <Badge variant="outline" className="text-xs">Core</Badge>
+                              {isCore && (
+                                <Badge className="text-xs bg-primary">Core</Badge>
                               )}
-                              <Badge variant="secondary" className="text-xs">
+                              {modulo.is_core && !isCore && (
+                                <Badge variant="outline" className="text-xs">Sistema Core</Badge>
+                              )}
+                              <Badge variant="secondary" className="text-xs font-mono">
                                 {modulo.codigo}
                               </Badge>
                             </div>
@@ -592,6 +812,7 @@ export default function GestaoSistemasBase() {
                                 id={`default-${modulo.id}`}
                                 checked={isDefault}
                                 onCheckedChange={() => toggleModuloDefault(modulo.id)}
+                                disabled={isCore}
                               />
                             </div>
                           )}
@@ -604,17 +825,39 @@ export default function GestaoSistemasBase() {
 
               {sistemaModulos.length > 0 && (
                 <div className="mt-4 p-4 rounded-lg bg-secondary/50">
-                  <h4 className="font-medium mb-2">Resumo</h4>
+                  <h4 className="font-medium mb-2 flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-primary" />
+                    Resumo de Módulos
+                  </h4>
                   <div className="flex flex-wrap gap-2">
                     {sistemaModulos.map(sm => {
                       const modulo = modulos.find(m => m.id === sm.modulo_id);
+                      const isCore = modulo && isModuloCore(modulo);
                       return modulo ? (
-                        <Badge key={sm.modulo_id} variant={sm.is_default ? 'default' : 'outline'}>
+                        <Badge 
+                          key={sm.modulo_id} 
+                          variant={isCore ? 'default' : sm.is_default ? 'secondary' : 'outline'}
+                        >
                           {modulo.nome}
-                          {sm.is_default && <CheckCircle className="h-3 w-3 ml-1" />}
+                          {(isCore || sm.is_default) && <CheckCircle className="h-3 w-3 ml-1" />}
                         </Badge>
                       ) : null;
                     })}
+                  </div>
+                </div>
+              )}
+
+              {selectedTipo && (
+                <div className="mt-4 p-4 rounded-lg border border-yellow-500/30 bg-yellow-500/5">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium text-yellow-700">Módulos Core</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Os módulos marcados como <strong>Core</strong> para o tipo "{selectedTipo}" 
+                        não podem ser desativados pelos clientes. Eles são essenciais para o funcionamento do sistema.
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}
