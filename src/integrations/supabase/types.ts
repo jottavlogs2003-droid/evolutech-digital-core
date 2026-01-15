@@ -68,7 +68,9 @@ export type Database = {
           logo_url: string | null
           monthly_revenue: number | null
           name: string
+          niche: string | null
           plan: Database["public"]["Enums"]["plan_type"]
+          settings: Json | null
           sistema_base_id: string | null
           slug: string
           status: Database["public"]["Enums"]["entity_status"]
@@ -80,7 +82,9 @@ export type Database = {
           logo_url?: string | null
           monthly_revenue?: number | null
           name: string
+          niche?: string | null
           plan?: Database["public"]["Enums"]["plan_type"]
+          settings?: Json | null
           sistema_base_id?: string | null
           slug: string
           status?: Database["public"]["Enums"]["entity_status"]
@@ -92,7 +96,9 @@ export type Database = {
           logo_url?: string | null
           monthly_revenue?: number | null
           name?: string
+          niche?: string | null
           plan?: Database["public"]["Enums"]["plan_type"]
+          settings?: Json | null
           sistema_base_id?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["entity_status"]
@@ -358,29 +364,43 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          company_id: string | null
           created_at: string
           email: string
           full_name: string | null
           id: string
+          is_active: boolean | null
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
+          company_id?: string | null
           created_at?: string
           email: string
           full_name?: string | null
           id: string
+          is_active?: boolean | null
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
+          company_id?: string | null
           created_at?: string
           email?: string
           full_name?: string | null
           id?: string
+          is_active?: boolean | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sistema_base_modulos: {
         Row: {
@@ -425,6 +445,7 @@ export type Database = {
         Row: {
           configuracoes: Json | null
           created_at: string
+          default_modules: Json | null
           descricao: string | null
           id: string
           nicho: string
@@ -436,6 +457,7 @@ export type Database = {
         Insert: {
           configuracoes?: Json | null
           created_at?: string
+          default_modules?: Json | null
           descricao?: string | null
           id?: string
           nicho: string
@@ -447,6 +469,7 @@ export type Database = {
         Update: {
           configuracoes?: Json | null
           created_at?: string
+          default_modules?: Json | null
           descricao?: string | null
           id?: string
           nicho?: string
@@ -731,7 +754,7 @@ export type Database = {
         Returns: boolean
       }
       is_company_owner: {
-        Args: { _empresa_id: string; _user_id: string }
+        Args: { _company_id: string; _user_id: string }
         Returns: boolean
       }
       is_evolutech_user: { Args: { _user_id: string }; Returns: boolean }
