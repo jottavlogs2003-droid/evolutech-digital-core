@@ -30,6 +30,8 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Plus, 
   Edit, 
@@ -46,6 +48,18 @@ import {
   GraduationCap,
   Layers,
   AlertTriangle,
+  Stethoscope,
+  Scissors,
+  Dumbbell,
+  Car,
+  Building2,
+  Church,
+  Heart,
+  Scale,
+  MessageSquare,
+  Copy,
+  Search,
+  Library,
 } from 'lucide-react';
 
 interface SistemaBase {
@@ -73,8 +87,19 @@ interface SistemaModulo {
   is_default: boolean;
 }
 
-// Tipos de sistema com configurações padrão
-type TipoSistema = 'Agendamentos' | 'Restaurante' | 'Comercial' | 'Educacional' | 'Genérico';
+// Tipos de sistema com configurações padrão - 25+ nichos
+type TipoSistema = 
+  | 'Clínicas Médicas' | 'Clínicas Odontológicas' | 'Psicólogos/Terapeutas'
+  | 'Salões de Beleza' | 'Barbearias' | 'Estúdios de Estética'
+  | 'Academias' | 'Personal Trainers'
+  | 'Escolas' | 'Cursos Profissionalizantes' | 'Plataforma EAD'
+  | 'Restaurantes' | 'Pizzarias' | 'Lanchonetes' | 'Delivery'
+  | 'Oficinas Mecânicas' | 'Lava-Jato'
+  | 'Imobiliárias' | 'Corretores Autônomos'
+  | 'Igrejas' | 'Associações/ONGs'
+  | 'Escritórios Contábeis' | 'Escritórios Advocacia'
+  | 'Serviços Gerais' | 'Prestadores Autônomos'
+  | 'Genérico';
 
 interface TipoSistemaConfig {
   icon: React.ReactNode;
@@ -82,45 +107,245 @@ interface TipoSistemaConfig {
   coreModulos: string[];
   opcionaisModulos: string[];
   color: string;
+  categoria: string;
 }
 
 const TIPOS_SISTEMA: Record<TipoSistema, TipoSistemaConfig> = {
-  Agendamentos: {
-    icon: <Calendar className="h-5 w-5" />,
-    descricao: 'Sistema completo para gestão de agendamentos, horários e atendimentos. Ideal para clínicas, salões, consultórios e prestadores de serviço.',
-    coreModulos: ['DASHBOARD', 'USUARIOS', 'AGENDAMENTOS', 'CLIENTES'],
-    opcionaisModulos: ['FINANCEIRO', 'PAGAMENTOS', 'NOTIFICACOES', 'RELATORIOS'],
-    color: 'bg-blue-500',
+  // SAÚDE
+  'Clínicas Médicas': {
+    icon: <Stethoscope className="h-5 w-5" />,
+    descricao: 'Sistema completo para clínicas médicas com agendamentos, prontuário eletrônico e financeiro.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'agendamentos', 'prontuario'],
+    opcionaisModulos: ['financeiro', 'pagamentos', 'relatorios_avancados'],
+    color: 'bg-emerald-500',
+    categoria: 'Saúde',
   },
-  Restaurante: {
-    icon: <UtensilsCrossed className="h-5 w-5" />,
-    descricao: 'Sistema para gestão de restaurantes, bares, lanchonetes e food service. Controle de pedidos, cardápio digital e mesas.',
-    coreModulos: ['DASHBOARD', 'USUARIOS', 'CARDAPIO', 'PEDIDOS', 'MESAS'],
-    opcionaisModulos: ['DELIVERY', 'ESTOQUE', 'FINANCEIRO', 'FIDELIDADE', 'RELATORIOS'],
+  'Clínicas Odontológicas': {
+    icon: <Stethoscope className="h-5 w-5" />,
+    descricao: 'Gestão de consultórios odontológicos com odontograma, tratamentos e agendamentos.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'agendamentos', 'prontuario'],
+    opcionaisModulos: ['financeiro', 'pagamentos', 'estoque'],
+    color: 'bg-emerald-500',
+    categoria: 'Saúde',
+  },
+  'Psicólogos/Terapeutas': {
+    icon: <Heart className="h-5 w-5" />,
+    descricao: 'Gestão de consultórios de saúde mental com prontuário, sessões e evolução do paciente.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'agendamentos', 'prontuario'],
+    opcionaisModulos: ['financeiro', 'assinaturas', 'pagamentos'],
+    color: 'bg-pink-500',
+    categoria: 'Saúde',
+  },
+  // BELEZA
+  'Salões de Beleza': {
+    icon: <Scissors className="h-5 w-5" />,
+    descricao: 'Agendamentos, controle de profissionais, comissões e fidelização de clientes.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'agendamentos'],
+    opcionaisModulos: ['financeiro', 'assinaturas', 'pagamentos'],
+    color: 'bg-pink-400',
+    categoria: 'Beleza',
+  },
+  'Barbearias': {
+    icon: <Scissors className="h-5 w-5" />,
+    descricao: 'Gestão de barbearias com agendamentos online, filas e pagamentos.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'agendamentos'],
+    opcionaisModulos: ['financeiro', 'pagamentos'],
+    color: 'bg-slate-600',
+    categoria: 'Beleza',
+  },
+  'Estúdios de Estética': {
+    icon: <Scissors className="h-5 w-5" />,
+    descricao: 'Controle de procedimentos, pacotes e acompanhamento de tratamentos estéticos.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'agendamentos', 'prontuario'],
+    opcionaisModulos: ['financeiro', 'assinaturas', 'pagamentos'],
+    color: 'bg-purple-400',
+    categoria: 'Beleza',
+  },
+  // FITNESS
+  'Academias': {
+    icon: <Dumbbell className="h-5 w-5" />,
+    descricao: 'Gestão completa de academia com matrículas, treinos, check-in e mensalidades.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'matriculas', 'presenca', 'treinos'],
+    opcionaisModulos: ['assinaturas', 'avaliacao_fisica', 'pagamentos', 'financeiro'],
     color: 'bg-orange-500',
+    categoria: 'Fitness',
   },
-  Comercial: {
-    icon: <Briefcase className="h-5 w-5" />,
-    descricao: 'Sistema para gestão comercial e vendas. Ideal para lojas, representantes comerciais e prestadores de serviço.',
-    coreModulos: ['DASHBOARD', 'USUARIOS', 'CLIENTES', 'FINANCEIRO'],
-    opcionaisModulos: ['CRM', 'CONTRATOS', 'SUPORTE', 'RELATORIOS'],
-    color: 'bg-green-500',
+  'Personal Trainers': {
+    icon: <Dumbbell className="h-5 w-5" />,
+    descricao: 'Gestão de alunos, treinos personalizados, agendamentos e evolução.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'agendamentos', 'treinos'],
+    opcionaisModulos: ['avaliacao_fisica', 'assinaturas', 'pagamentos'],
+    color: 'bg-orange-600',
+    categoria: 'Fitness',
   },
-  Educacional: {
+  // EDUCAÇÃO
+  'Escolas': {
     icon: <GraduationCap className="h-5 w-5" />,
-    descricao: 'Sistema para instituições de ensino, cursos online e treinamentos. Gestão de alunos, cursos e matrículas.',
-    coreModulos: ['DASHBOARD', 'USUARIOS', 'CURSOS', 'ALUNOS', 'MATRICULAS'],
-    opcionaisModulos: ['CERTIFICADOS', 'FINANCEIRO', 'AVALIACOES', 'SUPORTE'],
-    color: 'bg-purple-500',
+    descricao: 'Gestão escolar com matrículas, turmas, frequência e comunicação com pais.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'matriculas', 'presenca'],
+    opcionaisModulos: ['financeiro', 'documentos', 'relatorios_avancados'],
+    color: 'bg-blue-500',
+    categoria: 'Educação',
   },
-  Genérico: {
+  'Cursos Profissionalizantes': {
+    icon: <GraduationCap className="h-5 w-5" />,
+    descricao: 'Gestão de cursos livres com turmas, certificados e controle financeiro.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'matriculas', 'presenca'],
+    opcionaisModulos: ['certificados', 'financeiro', 'pagamentos'],
+    color: 'bg-blue-600',
+    categoria: 'Educação',
+  },
+  'Plataforma EAD': {
+    icon: <GraduationCap className="h-5 w-5" />,
+    descricao: 'Plataforma de cursos online com vídeos, materiais, provas e certificados.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'cursos_online'],
+    opcionaisModulos: ['certificados', 'assinaturas', 'pagamentos'],
+    color: 'bg-indigo-500',
+    categoria: 'Educação',
+  },
+  // FOOD SERVICE
+  'Restaurantes': {
+    icon: <UtensilsCrossed className="h-5 w-5" />,
+    descricao: 'Gestão completa de restaurante com mesas, comandas, cardápio e caixa.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'cardapio', 'comandas'],
+    opcionaisModulos: ['reservas', 'estoque', 'financeiro', 'delivery'],
+    color: 'bg-amber-500',
+    categoria: 'Food Service',
+  },
+  'Pizzarias': {
+    icon: <UtensilsCrossed className="h-5 w-5" />,
+    descricao: 'Gestão de pizzaria com pedidos, delivery e controle de produção.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'cardapio', 'comandas', 'delivery'],
+    opcionaisModulos: ['estoque', 'financeiro'],
+    color: 'bg-red-500',
+    categoria: 'Food Service',
+  },
+  'Lanchonetes': {
+    icon: <UtensilsCrossed className="h-5 w-5" />,
+    descricao: 'Sistema simples para lanchonetes com pedidos rápidos e controle de caixa.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'cardapio', 'comandas'],
+    opcionaisModulos: ['estoque', 'financeiro'],
+    color: 'bg-yellow-500',
+    categoria: 'Food Service',
+  },
+  'Delivery': {
+    icon: <UtensilsCrossed className="h-5 w-5" />,
+    descricao: 'Plataforma de delivery com app, rastreamento e gestão de entregadores.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'cardapio', 'delivery'],
+    opcionaisModulos: ['pagamentos', 'financeiro'],
+    color: 'bg-green-500',
+    categoria: 'Food Service',
+  },
+  // AUTOMOTIVO
+  'Oficinas Mecânicas': {
+    icon: <Car className="h-5 w-5" />,
+    descricao: 'Gestão de oficina com OS, peças, orçamentos e controle de serviços.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'ordens_servico'],
+    opcionaisModulos: ['estoque', 'financeiro'],
+    color: 'bg-slate-500',
+    categoria: 'Automotivo',
+  },
+  'Lava-Jato': {
+    icon: <Car className="h-5 w-5" />,
+    descricao: 'Controle de serviços de lavagem, pacotes e fidelização.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'ordens_servico'],
+    opcionaisModulos: ['assinaturas', 'financeiro'],
+    color: 'bg-cyan-500',
+    categoria: 'Automotivo',
+  },
+  // IMOBILIÁRIO
+  'Imobiliárias': {
+    icon: <Building2 className="h-5 w-5" />,
+    descricao: 'Gestão de imóveis, contratos, visitas e CRM de clientes.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'imoveis', 'agendamentos'],
+    opcionaisModulos: ['documentos', 'financeiro'],
+    color: 'bg-violet-500',
+    categoria: 'Imobiliário',
+  },
+  'Corretores Autônomos': {
+    icon: <Building2 className="h-5 w-5" />,
+    descricao: 'CRM imobiliário simples para corretores independentes.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'imoveis', 'agendamentos'],
+    opcionaisModulos: [],
+    color: 'bg-violet-400',
+    categoria: 'Imobiliário',
+  },
+  // RELIGIOSO / TERCEIRO SETOR
+  'Igrejas': {
+    icon: <Church className="h-5 w-5" />,
+    descricao: 'Gestão de membros, dízimos, eventos e comunicação da comunidade.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'membros'],
+    opcionaisModulos: ['dizimos', 'agendamentos', 'documentos'],
+    color: 'bg-indigo-500',
+    categoria: 'Religioso',
+  },
+  'Associações/ONGs': {
+    icon: <Heart className="h-5 w-5" />,
+    descricao: 'Controle de associados, contribuições, projetos e transparência.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'membros'],
+    opcionaisModulos: ['assinaturas', 'financeiro', 'documentos', 'relatorios_avancados'],
+    color: 'bg-teal-500',
+    categoria: 'Terceiro Setor',
+  },
+  // SERVIÇOS PROFISSIONAIS
+  'Escritórios Contábeis': {
+    icon: <Briefcase className="h-5 w-5" />,
+    descricao: 'Gestão de clientes, documentos, prazos e integração fiscal.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'documentos', 'agendamentos'],
+    opcionaisModulos: ['financeiro', 'relatorios_avancados'],
+    color: 'bg-cyan-600',
+    categoria: 'Serviços',
+  },
+  'Escritórios Advocacia': {
+    icon: <Scale className="h-5 w-5" />,
+    descricao: 'Gestão de processos, prazos, clientes e controle de honorários.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'processos', 'documentos'],
+    opcionaisModulos: ['agendamentos', 'financeiro'],
+    color: 'bg-rose-600',
+    categoria: 'Jurídico',
+  },
+  'Serviços Gerais': {
+    icon: <Briefcase className="h-5 w-5" />,
+    descricao: 'Gestão de ordens de serviço, equipes e agendamentos de visitas.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'ordens_servico', 'agendamentos'],
+    opcionaisModulos: ['financeiro'],
+    color: 'bg-gray-500',
+    categoria: 'Serviços',
+  },
+  'Prestadores Autônomos': {
+    icon: <Briefcase className="h-5 w-5" />,
+    descricao: 'Sistema simples para profissionais autônomos com agenda e financeiro.',
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes', 'agendamentos', 'ordens_servico'],
+    opcionaisModulos: ['financeiro', 'pagamentos'],
+    color: 'bg-gray-600',
+    categoria: 'Serviços',
+  },
+  // GENÉRICO
+  'Genérico': {
     icon: <Layers className="h-5 w-5" />,
     descricao: 'Sistema base flexível para qualquer tipo de negócio. Personalize conforme sua necessidade.',
-    coreModulos: ['DASHBOARD', 'USUARIOS'],
-    opcionaisModulos: [], // Will show all available modules
+    coreModulos: ['auth', 'users', 'dashboard', 'clientes'],
+    opcionaisModulos: [],
     color: 'bg-gray-500',
+    categoria: 'Outros',
   },
 };
+
+// Group templates by category
+const CATEGORIAS = [
+  { nome: 'Saúde', icon: <Stethoscope className="h-4 w-4" />, color: 'bg-emerald-500' },
+  { nome: 'Beleza', icon: <Scissors className="h-4 w-4" />, color: 'bg-pink-500' },
+  { nome: 'Fitness', icon: <Dumbbell className="h-4 w-4" />, color: 'bg-orange-500' },
+  { nome: 'Educação', icon: <GraduationCap className="h-4 w-4" />, color: 'bg-blue-500' },
+  { nome: 'Food Service', icon: <UtensilsCrossed className="h-4 w-4" />, color: 'bg-amber-500' },
+  { nome: 'Automotivo', icon: <Car className="h-4 w-4" />, color: 'bg-slate-500' },
+  { nome: 'Imobiliário', icon: <Building2 className="h-4 w-4" />, color: 'bg-violet-500' },
+  { nome: 'Religioso', icon: <Church className="h-4 w-4" />, color: 'bg-indigo-500' },
+  { nome: 'Terceiro Setor', icon: <Heart className="h-4 w-4" />, color: 'bg-teal-500' },
+  { nome: 'Serviços', icon: <Briefcase className="h-4 w-4" />, color: 'bg-cyan-500' },
+  { nome: 'Jurídico', icon: <Scale className="h-4 w-4" />, color: 'bg-rose-500' },
+  { nome: 'Outros', icon: <Layers className="h-4 w-4" />, color: 'bg-gray-500' },
+];
 
 export default function GestaoSistemasBase() {
   const { user } = useAuth();
@@ -415,17 +640,29 @@ export default function GestaoSistemasBase() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Gestão de Sistemas Base</h1>
-          <p className="text-muted-foreground">
-            Crie e configure templates de sistemas para seus clientes
-          </p>
+        <div className="flex items-center gap-3">
+          <Library className="h-8 w-8 text-primary" />
+          <div>
+            <h1 className="text-3xl font-bold">Biblioteca de Templates</h1>
+            <p className="text-muted-foreground">
+              {sistemas.length} templates • {modulos.length} módulos • {Object.keys(TIPOS_SISTEMA).length - 1} nichos
+            </p>
+          </div>
         </div>
         <Button onClick={openNewSistema} className="gap-2">
           <Plus className="h-4 w-4" />
-          Novo Sistema Base
+          Novo Template
         </Button>
       </div>
+
+      {/* WhatsApp Alert */}
+      <Alert className="border-amber-500/50 bg-amber-500/10">
+        <MessageSquare className="h-4 w-4 text-amber-600" />
+        <AlertTitle className="text-amber-600">Automação WhatsApp</AlertTitle>
+        <AlertDescription className="text-amber-700">
+          A automação de WhatsApp será habilitada em versão futura. A estrutura de eventos, filas e logs já está preparada.
+        </AlertDescription>
+      </Alert>
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-3">
