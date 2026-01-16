@@ -736,6 +736,106 @@ export type Database = {
           },
         ]
       }
+      whatsapp_config: {
+        Row: {
+          auth_token: string | null
+          created_at: string
+          empresa_id: string
+          id: string
+          is_active: boolean | null
+          max_retries: number | null
+          timeout_ms: number | null
+          updated_at: string
+          webhook_url: string
+        }
+        Insert: {
+          auth_token?: string | null
+          created_at?: string
+          empresa_id: string
+          id?: string
+          is_active?: boolean | null
+          max_retries?: number | null
+          timeout_ms?: number | null
+          updated_at?: string
+          webhook_url: string
+        }
+        Update: {
+          auth_token?: string | null
+          created_at?: string
+          empresa_id?: string
+          id?: string
+          is_active?: boolean | null
+          max_retries?: number | null
+          timeout_ms?: number | null
+          updated_at?: string
+          webhook_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_config_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_dispatch: {
+        Row: {
+          created_at: string
+          data_disparo: string | null
+          empresa_id: string
+          erro_mensagem: string | null
+          evento: string
+          id: string
+          payload_enviado: Json
+          resposta_webhook: Json | null
+          status: string
+          telefone: string
+          tentativas: number | null
+          updated_at: string
+          usuario_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data_disparo?: string | null
+          empresa_id: string
+          erro_mensagem?: string | null
+          evento: string
+          id?: string
+          payload_enviado?: Json
+          resposta_webhook?: Json | null
+          status?: string
+          telefone: string
+          tentativas?: number | null
+          updated_at?: string
+          usuario_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data_disparo?: string | null
+          empresa_id?: string
+          erro_mensagem?: string | null
+          evento?: string
+          id?: string
+          payload_enviado?: Json
+          resposta_webhook?: Json | null
+          status?: string
+          telefone?: string
+          tentativas?: number | null
+          updated_at?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_dispatch_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
