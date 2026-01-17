@@ -361,6 +361,59 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_gateways: {
+        Row: {
+          ambiente: string
+          configuracoes: Json | null
+          created_at: string
+          empresa_id: string
+          id: string
+          is_active: boolean
+          nome_exibicao: string
+          provedor: string
+          public_key: string | null
+          secret_key_encrypted: string | null
+          updated_at: string
+          webhook_url: string | null
+        }
+        Insert: {
+          ambiente?: string
+          configuracoes?: Json | null
+          created_at?: string
+          empresa_id: string
+          id?: string
+          is_active?: boolean
+          nome_exibicao: string
+          provedor: string
+          public_key?: string | null
+          secret_key_encrypted?: string | null
+          updated_at?: string
+          webhook_url?: string | null
+        }
+        Update: {
+          ambiente?: string
+          configuracoes?: Json | null
+          created_at?: string
+          empresa_id?: string
+          id?: string
+          is_active?: boolean
+          nome_exibicao?: string
+          provedor?: string
+          public_key?: string | null
+          secret_key_encrypted?: string | null
+          updated_at?: string
+          webhook_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_gateways_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -736,6 +789,56 @@ export type Database = {
           },
         ]
       }
+      whatsapp_automation_config: {
+        Row: {
+          ativado_por: string | null
+          created_at: string
+          data_ativacao: string | null
+          empresa_id: string
+          eventos_disponiveis: Json | null
+          id: string
+          is_enabled: boolean
+          motivo_desativacao: string | null
+          payload_padrao: Json | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          ativado_por?: string | null
+          created_at?: string
+          data_ativacao?: string | null
+          empresa_id: string
+          eventos_disponiveis?: Json | null
+          id?: string
+          is_enabled?: boolean
+          motivo_desativacao?: string | null
+          payload_padrao?: Json | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          ativado_por?: string | null
+          created_at?: string
+          data_ativacao?: string | null
+          empresa_id?: string
+          eventos_disponiveis?: Json | null
+          id?: string
+          is_enabled?: boolean
+          motivo_desativacao?: string | null
+          payload_padrao?: Json | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_automation_config_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       whatsapp_config: {
         Row: {
           auth_token: string | null
@@ -844,6 +947,29 @@ export type Database = {
       can_access_company: {
         Args: { _company_id: string; _user_id: string }
         Returns: boolean
+      }
+      get_payment_gateways_for_user: {
+        Args: never
+        Returns: {
+          ambiente: string
+          configuracoes: Json | null
+          created_at: string
+          empresa_id: string
+          id: string
+          is_active: boolean
+          nome_exibicao: string
+          provedor: string
+          public_key: string | null
+          secret_key_encrypted: string | null
+          updated_at: string
+          webhook_url: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "payment_gateways"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_user_company_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
