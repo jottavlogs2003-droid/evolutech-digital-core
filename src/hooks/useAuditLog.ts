@@ -31,5 +31,10 @@ export const useAuditLog = () => {
     }
   };
 
-  return { logAudit };
+  // Alias function for backwards compatibility
+  const logAction = async (action: AuditAction, entityType: string, entityId?: string, details?: Json) => {
+    return logAudit({ action, entityType, entityId, details });
+  };
+
+  return { logAudit, logAction };
 };
