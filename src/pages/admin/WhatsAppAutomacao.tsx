@@ -256,7 +256,7 @@ const WhatsAppAutomacao: React.FC = () => {
                         <div>
                           <p className="font-medium">{config.company?.name || 'Empresa'}</p>
                           <p className="text-xs text-muted-foreground">
-                            {config.eventos_disponiveis?.length || 0} eventos configurados
+                            {Array.isArray(config.eventos_disponiveis) ? config.eventos_disponiveis.length : 0} eventos configurados
                           </p>
                         </div>
                       </div>
