@@ -18,6 +18,9 @@ import NotFound from "./pages/NotFound";
 // Admin Evolutech pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import GestaoSistemasBase from "./pages/admin/GestaoSistemasBase";
+import GatewaysPagamento from "./pages/admin/GatewaysPagamento";
+import WhatsAppAutomacao from "./pages/admin/WhatsAppAutomacao";
+import GerenciarUsuarios from "./pages/admin/GerenciarUsuarios";
 import Empresas from "./pages/Empresas";
 import Usuarios from "./pages/Usuarios";
 import Configuracoes from "./pages/Configuracoes";
@@ -72,6 +75,9 @@ const App = () => (
               <Route path="/admin-evolutech/sistemas-base" element={<GestaoSistemasBase />} />
               <Route path="/admin-evolutech/modulos" element={<Modulos />} />
               <Route path="/admin-evolutech/usuarios" element={<Usuarios />} />
+              <Route path="/admin-evolutech/gerenciar-usuarios" element={<GerenciarUsuarios />} />
+              <Route path="/admin-evolutech/gateways" element={<GatewaysPagamento />} />
+              <Route path="/admin-evolutech/whatsapp" element={<WhatsAppAutomacao />} />
               <Route path="/admin-evolutech/suporte" element={<Suporte />} />
               <Route path="/admin-evolutech/evolucoes" element={<Evolucoes />} />
               <Route path="/admin-evolutech/treinamentos" element={<Treinamentos />} />

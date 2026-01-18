@@ -25,6 +25,9 @@ import {
   Rocket,
   GraduationCap,
   CreditCard,
+  Wallet,
+  MessageSquare,
+  UserPlus,
 } from 'lucide-react';
 
 interface NavItem {
@@ -40,6 +43,9 @@ const navItems: NavItem[] = [
   { icon: Blocks, label: 'Sistemas Base', path: '/admin-evolutech/sistemas-base' },
   { icon: Package, label: 'Módulos', path: '/admin-evolutech/modulos' },
   { icon: Users, label: 'Usuários', path: '/admin-evolutech/usuarios' },
+  { icon: UserPlus, label: 'Gerenciar Usuários', path: '/admin-evolutech/gerenciar-usuarios' },
+  { icon: Wallet, label: 'Gateways Pagamento', path: '/admin-evolutech/gateways', superAdminOnly: true },
+  { icon: MessageSquare, label: 'WhatsApp', path: '/admin-evolutech/whatsapp', superAdminOnly: true },
   { icon: HeadphonesIcon, label: 'Suporte', path: '/admin-evolutech/suporte' },
   { icon: Rocket, label: 'Evoluções', path: '/admin-evolutech/evolucoes' },
   { icon: GraduationCap, label: 'Treinamentos', path: '/admin-evolutech/treinamentos' },
