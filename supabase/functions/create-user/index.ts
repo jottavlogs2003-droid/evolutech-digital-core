@@ -67,10 +67,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Validate email format - only ASCII characters allowed (Supabase Auth requirement)
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
-      return new Response(JSON.stringify({ error: 'Formato de e-mail inválido' }), {
+      return new Response(JSON.stringify({ 
+        error: 'E-mail inválido. Use apenas letras sem acentos, números e caracteres permitidos (. _ % + -)' 
+      }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
