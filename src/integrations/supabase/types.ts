@@ -61,6 +61,76 @@ export type Database = {
           },
         ]
       }
+      chatbot_conversations: {
+        Row: {
+          chatbot_id: string
+          created_at: string
+          id: string
+          session_id: string
+          updated_at: string
+          visitor_email: string | null
+          visitor_name: string | null
+        }
+        Insert: {
+          chatbot_id: string
+          created_at?: string
+          id?: string
+          session_id: string
+          updated_at?: string
+          visitor_email?: string | null
+          visitor_name?: string | null
+        }
+        Update: {
+          chatbot_id?: string
+          created_at?: string
+          id?: string
+          session_id?: string
+          updated_at?: string
+          visitor_email?: string | null
+          visitor_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chatbot_conversations_chatbot_id_fkey"
+            columns: ["chatbot_id"]
+            isOneToOne: false
+            referencedRelation: "company_chatbots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chatbot_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chatbot_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chatbot_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       companies: {
         Row: {
           created_at: string
@@ -110,6 +180,65 @@ export type Database = {
             columns: ["sistema_base_id"]
             isOneToOne: false
             referencedRelation: "sistemas_base"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_chatbots: {
+        Row: {
+          chatbot_type: string
+          company_id: string
+          created_at: string
+          external_api_key: string | null
+          external_webhook_url: string | null
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          primary_color: string | null
+          slug: string | null
+          system_prompt: string | null
+          updated_at: string
+          welcome_message: string | null
+        }
+        Insert: {
+          chatbot_type?: string
+          company_id: string
+          created_at?: string
+          external_api_key?: string | null
+          external_webhook_url?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          primary_color?: string | null
+          slug?: string | null
+          system_prompt?: string | null
+          updated_at?: string
+          welcome_message?: string | null
+        }
+        Update: {
+          chatbot_type?: string
+          company_id?: string
+          created_at?: string
+          external_api_key?: string | null
+          external_webhook_url?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          primary_color?: string | null
+          slug?: string | null
+          system_prompt?: string | null
+          updated_at?: string
+          welcome_message?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_chatbots_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
