@@ -21,6 +21,7 @@ import GestaoSistemasBase from "./pages/admin/GestaoSistemasBase";
 import GatewaysPagamento from "./pages/admin/GatewaysPagamento";
 import WhatsAppAutomacao from "./pages/admin/WhatsAppAutomacao";
 import GerenciarUsuarios from "./pages/admin/GerenciarUsuarios";
+import ChatbotsManager from "./pages/admin/ChatbotsManager";
 import Empresas from "./pages/Empresas";
 import Usuarios from "./pages/Usuarios";
 import Configuracoes from "./pages/Configuracoes";
@@ -31,6 +32,9 @@ import Treinamentos from "./pages/Treinamentos";
 import MetricasGlobais from "./pages/MetricasGlobais";
 import Financeiro from "./pages/Financeiro";
 import Logs from "./pages/Logs";
+
+// Public chatbot page
+import ChatbotPublic from "./pages/ChatbotPublic";
 
 // Empresa pages
 import EmpresaDashboard from "./pages/empresa/EmpresaDashboard";
@@ -51,6 +55,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/aceitar-convite" element={<AcceptInvite />} />
+            <Route path="/chat/:slug" element={<ChatbotPublic />} />
             
             {/* Role-based redirect after login */}
             <Route path="/redirect" element={<RoleRedirect />} />
@@ -78,6 +83,7 @@ const App = () => (
               <Route path="/admin-evolutech/gerenciar-usuarios" element={<GerenciarUsuarios />} />
               <Route path="/admin-evolutech/gateways" element={<GatewaysPagamento />} />
               <Route path="/admin-evolutech/whatsapp" element={<WhatsAppAutomacao />} />
+              <Route path="/admin-evolutech/chatbots" element={<ChatbotsManager />} />
               <Route path="/admin-evolutech/suporte" element={<Suporte />} />
               <Route path="/admin-evolutech/evolucoes" element={<Evolucoes />} />
               <Route path="/admin-evolutech/treinamentos" element={<Treinamentos />} />
