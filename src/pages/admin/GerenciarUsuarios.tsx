@@ -175,10 +175,10 @@ const GerenciarUsuarios: React.FC = () => {
       return;
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Validate email format - only ASCII characters allowed (Supabase Auth requirement)
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(trimmedEmail)) {
-      toast.error('E-mail inválido. Verifique o formato (exemplo: usuario@email.com)');
+      toast.error('E-mail inválido. Use apenas letras sem acentos, números e caracteres permitidos (. _ % + -)');
       return;
     }
 
