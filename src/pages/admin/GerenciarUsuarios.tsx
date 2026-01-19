@@ -166,8 +166,24 @@ const GerenciarUsuarios: React.FC = () => {
   };
 
   const handleCreateUser = async () => {
-    if (!formData.email || !formData.password || !formData.full_name) {
+    const trimmedEmail = formData.email.trim().toLowerCase();
+    const trimmedName = formData.full_name.trim();
+    const trimmedPassword = formData.password;
+
+    if (!trimmedEmail || !trimmedPassword || !trimmedName) {
       toast.error('Preencha todos os campos obrigatórios');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      toast.error('E-mail inválido. Verifique o formato (exemplo: usuario@email.com)');
+      return;
+    }
+
+    if (trimmedPassword.length < 6) {
+      toast.error('A senha deve ter pelo menos 6 caracteres');
       return;
     }
 
@@ -183,9 +199,9 @@ const GerenciarUsuarios: React.FC = () => {
       // Call edge function to create user
       const { data, error } = await supabase.functions.invoke('create-user', {
         body: {
-          email: formData.email,
-          password: formData.password,
-          full_name: formData.full_name,
+          email: trimmedEmail,
+          password: trimmedPassword,
+          full_name: trimmedName,
           role: formData.role,
           company_id: selectedRoleConfig?.requiresCompany ? formData.company_id : null,
         }

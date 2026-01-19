@@ -53,10 +53,24 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { email, password, full_name, role, company_id } = await req.json();
+    const body = await req.json();
+    const email = body.email?.trim().toLowerCase();
+    const password = body.password;
+    const full_name = body.full_name?.trim();
+    const role = body.role;
+    const company_id = body.company_id;
 
     if (!email || !password || !full_name || !role) {
       return new Response(JSON.stringify({ error: 'Campos obrigatórios faltando' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return new Response(JSON.stringify({ error: 'Formato de e-mail inválido' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
