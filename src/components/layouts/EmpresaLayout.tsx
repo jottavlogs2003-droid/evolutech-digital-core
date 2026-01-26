@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCompanyModules } from '@/hooks/useCompanyModules';
 import { RoleBadge } from '@/components/RoleBadge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
 import {
   LayoutDashboard,
   Users,
@@ -21,6 +21,13 @@ import {
   CreditCard,
   Building2,
   UserPlus,
+  Calendar,
+  Package,
+  Wallet,
+  BarChart3,
+  ShoppingCart,
+  Warehouse,
+  Smartphone,
 } from 'lucide-react';
 
 interface NavItem {
@@ -29,52 +36,45 @@ interface NavItem {
   path: string;
   moduleCode?: string; // If tied to a module
   ownerOnly?: boolean; // Only for DONO_EMPRESA
+  alwaysShow?: boolean; // Always show regardless of modules
 }
 
+// Navigation items - dynamically filtered based on company modules
 const navItems: NavItem[] = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/empresa/dashboard', ownerOnly: true },
-  { icon: LayoutDashboard, label: 'Aplicativo', path: '/empresa/app' },
+  // Core items (always shown based on role)
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/empresa/dashboard', moduleCode: 'dashboard', alwaysShow: true },
+  { icon: Smartphone, label: 'Aplicativo', path: '/empresa/app', moduleCode: 'app' },
+  
+  // Business modules
   { icon: Users, label: 'Clientes', path: '/empresa/clientes', moduleCode: 'customers' },
-  { icon: Building2, label: 'Produtos', path: '/empresa/produtos', moduleCode: 'products' },
-  { icon: Bell, label: 'Agendamentos', path: '/empresa/agendamentos', moduleCode: 'appointments' },
-  { icon: CreditCard, label: 'Pedidos', path: '/empresa/pedidos', moduleCode: 'orders' },
-  { icon: CreditCard, label: 'Caixa', path: '/empresa/caixa', moduleCode: 'cash', ownerOnly: true },
-  { icon: HelpCircle, label: 'Relatórios', path: '/empresa/relatorios', moduleCode: 'reports', ownerOnly: true },
-  { icon: UserPlus, label: 'Equipe', path: '/empresa/equipe', ownerOnly: true },
-  { icon: HeadphonesIcon, label: 'Suporte', path: '/empresa/suporte' },
-  { icon: GraduationCap, label: 'Treinamentos', path: '/empresa/treinamentos' },
-  { icon: Settings, label: 'Configurações', path: '/empresa/configuracoes', ownerOnly: true },
+  { icon: Package, label: 'Produtos', path: '/empresa/produtos', moduleCode: 'products' },
+  { icon: Warehouse, label: 'Estoque', path: '/empresa/estoque', moduleCode: 'inventory' },
+  { icon: Calendar, label: 'Agendamentos', path: '/empresa/agendamentos', moduleCode: 'appointments' },
+  { icon: ShoppingCart, label: 'Pedidos', path: '/empresa/pedidos', moduleCode: 'orders' },
+  { icon: Wallet, label: 'Caixa', path: '/empresa/caixa', moduleCode: 'cash', ownerOnly: true },
+  { icon: CreditCard, label: 'Financeiro', path: '/empresa/financeiro', moduleCode: 'finance', ownerOnly: true },
+  { icon: BarChart3, label: 'Relatórios', path: '/empresa/relatorios', moduleCode: 'reports', ownerOnly: true },
+  
+  // Team management (core for owners)
+  { icon: UserPlus, label: 'Equipe', path: '/empresa/equipe', moduleCode: 'users', ownerOnly: true },
+  
+  // Support & Training
+  { icon: HeadphonesIcon, label: 'Suporte', path: '/empresa/suporte', moduleCode: 'support', alwaysShow: true },
+  { icon: GraduationCap, label: 'Treinamentos', path: '/empresa/treinamentos', moduleCode: 'training' },
+  
+  // Settings (always for owners)
+  { icon: Settings, label: 'Configurações', path: '/empresa/configuracoes', moduleCode: 'settings', ownerOnly: true, alwaysShow: true },
 ];
 
 export const EmpresaLayout: React.FC = () => {
   const { user, logout, company } = useAuth();
+  const { activeCodes, isLoading: modulesLoading } = useCompanyModules();
   const navigate = useNavigate();
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeModules, setActiveModules] = useState<string[]>([]);
 
   const isOwner = user?.role === 'DONO_EMPRESA';
-
-  useEffect(() => {
-    // Fetch active modules for the company
-    const fetchActiveModules = async () => {
-      if (user?.tenantId) {
-        const { data } = await supabase
-          .from('empresa_modulos')
-          .select('modulos(codigo)')
-          .eq('empresa_id', user.tenantId)
-          .eq('ativo', true);
-        
-        if (data) {
-          const codes = data.map((item: any) => item.modulos?.codigo).filter(Boolean);
-          setActiveModules(codes);
-        }
-      }
-    };
-
-    fetchActiveModules();
-  }, [user]);
 
   if (!user) return null;
 
@@ -83,8 +83,16 @@ export const EmpresaLayout: React.FC = () => {
     // Check owner-only restriction
     if (item.ownerOnly && !isOwner) return false;
     
-    // Check module activation
-    if (item.moduleCode && !activeModules.includes(item.moduleCode)) return false;
+    // Always show items marked as alwaysShow
+    if (item.alwaysShow) return true;
+    
+    // Check module activation (case-insensitive)
+    if (item.moduleCode) {
+      const hasModule = activeCodes.some(
+        code => code.toLowerCase() === item.moduleCode?.toLowerCase()
+      );
+      if (!hasModule) return false;
+    }
     
     return true;
   });
