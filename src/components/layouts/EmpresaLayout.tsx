@@ -34,10 +34,15 @@ interface NavItem {
 const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/empresa/dashboard', ownerOnly: true },
   { icon: LayoutDashboard, label: 'Aplicativo', path: '/empresa/app' },
+  { icon: Users, label: 'Clientes', path: '/empresa/clientes', moduleCode: 'customers' },
+  { icon: Building2, label: 'Produtos', path: '/empresa/produtos', moduleCode: 'products' },
+  { icon: Bell, label: 'Agendamentos', path: '/empresa/agendamentos', moduleCode: 'appointments' },
+  { icon: CreditCard, label: 'Pedidos', path: '/empresa/pedidos', moduleCode: 'orders' },
+  { icon: CreditCard, label: 'Caixa', path: '/empresa/caixa', moduleCode: 'cash', ownerOnly: true },
+  { icon: HelpCircle, label: 'Relatórios', path: '/empresa/relatorios', moduleCode: 'reports', ownerOnly: true },
   { icon: UserPlus, label: 'Equipe', path: '/empresa/equipe', ownerOnly: true },
   { icon: HeadphonesIcon, label: 'Suporte', path: '/empresa/suporte' },
   { icon: GraduationCap, label: 'Treinamentos', path: '/empresa/treinamentos' },
-  { icon: CreditCard, label: 'Financeiro', path: '/empresa/financeiro', ownerOnly: true },
   { icon: Settings, label: 'Configurações', path: '/empresa/configuracoes', ownerOnly: true },
 ];
 
