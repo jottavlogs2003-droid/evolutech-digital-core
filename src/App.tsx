@@ -41,6 +41,12 @@ import ChatbotPublic from "./pages/ChatbotPublic";
 import EmpresaDashboard from "./pages/empresa/EmpresaDashboard";
 import EmpresaApp from "./pages/empresa/EmpresaApp";
 import ConvitesEquipe from "./pages/empresa/ConvitesEquipe";
+import Clientes from "./pages/empresa/Clientes";
+import Produtos from "./pages/empresa/Produtos";
+import Agendamentos from "./pages/empresa/Agendamentos";
+import Pedidos from "./pages/empresa/Pedidos";
+import Caixa from "./pages/empresa/Caixa";
+import Relatorios from "./pages/empresa/Relatorios";
 
 const queryClient = new QueryClient();
 
@@ -141,6 +147,14 @@ const App = () => (
               {/* Common empresa routes */}
               <Route path="/empresa/suporte" element={<Suporte />} />
               <Route path="/empresa/treinamentos" element={<Treinamentos />} />
+              
+              {/* CRUD Module Routes */}
+              <Route path="/empresa/clientes" element={<Clientes />} />
+              <Route path="/empresa/produtos" element={<Produtos />} />
+              <Route path="/empresa/agendamentos" element={<Agendamentos />} />
+              <Route path="/empresa/pedidos" element={<Pedidos />} />
+              <Route path="/empresa/caixa" element={<Caixa />} />
+              <Route path="/empresa/relatorios" element={<Relatorios />} />
               
               {/* Dono Empresa Only */}
               <Route 
