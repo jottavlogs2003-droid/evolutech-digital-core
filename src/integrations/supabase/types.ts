@@ -1103,6 +1103,7 @@ export type Database = {
           id: string
           nicho: string
           nome: string
+          porte: string | null
           status: Database["public"]["Enums"]["entity_status"] | null
           updated_at: string
           versao: string | null
@@ -1115,6 +1116,7 @@ export type Database = {
           id?: string
           nicho: string
           nome: string
+          porte?: string | null
           status?: Database["public"]["Enums"]["entity_status"] | null
           updated_at?: string
           versao?: string | null
@@ -1127,6 +1129,7 @@ export type Database = {
           id?: string
           nicho?: string
           nome?: string
+          porte?: string | null
           status?: Database["public"]["Enums"]["entity_status"] | null
           updated_at?: string
           versao?: string | null
