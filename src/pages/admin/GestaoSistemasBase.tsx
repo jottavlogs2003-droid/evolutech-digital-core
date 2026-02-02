@@ -795,15 +795,15 @@ export default function GestaoSistemasBase() {
 
       {/* Edit/Create Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="max-w-4xl flex flex-col max-h-[90vh]">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle className="flex items-center gap-2">
               <Blocks className="h-5 w-5" />
               {selectedSistema ? `Editar: ${selectedSistema.nome}` : 'Novo Sistema Base'}
             </DialogTitle>
           </DialogHeader>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-1 flex flex-col min-h-0 overflow-hidden">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="tipo" className="gap-2" disabled={!!selectedSistema}>
                 <Sparkles className="h-4 w-4" />
@@ -820,7 +820,7 @@ export default function GestaoSistemasBase() {
             </TabsList>
 
             {/* Tab: Tipo de Sistema */}
-            <TabsContent value="tipo" className="space-y-4 mt-4">
+            <TabsContent value="tipo" className="space-y-4 mt-4 flex-1 overflow-y-auto">
               <div className="text-center mb-6">
                 <h3 className="text-lg font-semibold mb-2">Escolha o tipo de sistema</h3>
                 <p className="text-sm text-muted-foreground">
@@ -1101,7 +1101,7 @@ export default function GestaoSistemasBase() {
             </TabsContent>
           </Tabs>
 
-          <div className="flex justify-end gap-2 pt-4 border-t">
+          <div className="flex justify-end gap-2 pt-4 border-t flex-shrink-0">
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancelar
             </Button>

@@ -237,7 +237,7 @@ export default function SistemasBase() {
               Novo Sistema
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>{selectedSistema ? 'Editar' : 'Novo'} Sistema Base</DialogTitle>
             </DialogHeader>
@@ -342,11 +342,11 @@ export default function SistemasBase() {
 
       {/* Módulos Dialog */}
       <Dialog open={isModulosDialogOpen} onOpenChange={setIsModulosDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle>Módulos de {selectedSistema?.nome}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
+          <div className="space-y-3 flex-1 overflow-y-auto max-h-[50vh] pr-2">
             {modulos.map((modulo) => (
               <div
                 key={modulo.id}

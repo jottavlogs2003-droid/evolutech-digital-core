@@ -511,14 +511,15 @@ const Empresas: React.FC = () => {
 
       {/* Create/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
+        <DialogContent className="max-w-2xl flex flex-col max-h-[85vh]">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>{selectedCompany ? 'Editar Empresa' : 'Nova Empresa'}</DialogTitle>
             <DialogDescription>
               {selectedCompany ? 'Atualize os dados da empresa' : 'Preencha os dados para criar uma nova empresa'}
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0">
+            <div className="space-y-4 flex-1 overflow-y-auto pr-2 min-h-0">
             {/* Logo Upload */}
             <div className="space-y-2">
               <Label>Logo da Empresa</Label>
@@ -618,7 +619,8 @@ const Empresas: React.FC = () => {
                 placeholder="0.00"
               />
             </div>
-            <DialogFooter>
+            </div>
+            <DialogFooter className="flex-shrink-0 pt-4 border-t border-border mt-4">
               <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Cancelar
               </Button>

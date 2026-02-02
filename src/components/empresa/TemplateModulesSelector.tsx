@@ -254,7 +254,7 @@ export const TemplateModulesSelector: React.FC<TemplateModulesSelectorProps> = (
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
           ) : (
-            <ScrollArea className="h-[200px] rounded-lg border border-border bg-secondary/20 p-2">
+            <ScrollArea className="h-[180px] rounded-lg border border-border bg-secondary/20 p-2">
               <Accordion type="multiple" defaultValue={['template', 'additional']} className="space-y-2">
                 {/* Template Modules */}
                 <AccordionItem value="template" className="border-none">
