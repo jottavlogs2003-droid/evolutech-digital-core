@@ -348,15 +348,15 @@ const GerenciarUsuarios: React.FC = () => {
                 Novo Usuário
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
+            <DialogContent className="sm:max-w-[500px] flex flex-col max-h-[85vh]">
+              <DialogHeader className="flex-shrink-0">
                 <DialogTitle>Criar Novo Usuário</DialogTitle>
                 <DialogDescription>
                   Cadastre um novo usuário na plataforma
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="grid gap-4 py-4">
+              <div className="grid gap-4 py-4 flex-1 overflow-y-auto min-h-0 pr-2">
                 <div className="space-y-2">
                   <Label>Nome Completo *</Label>
                   <Input
@@ -434,7 +434,7 @@ const GerenciarUsuarios: React.FC = () => {
                 )}
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="flex-shrink-0 pt-4 border-t border-border">
                 <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
                   Cancelar
                 </Button>

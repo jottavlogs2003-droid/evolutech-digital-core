@@ -49,18 +49,18 @@ export const FormDialog: React.FC<FormDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={sizeClasses[size]}>
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
+      <DialogContent className={`${sizeClasses[size]} flex flex-col max-h-[85vh]`}>
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>{title}</DialogTitle>
             {description && <DialogDescription>{description}</DialogDescription>}
           </DialogHeader>
 
-          <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
+          <div className="py-4 space-y-4 flex-1 overflow-y-auto min-h-0 pr-2">
             {children}
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="flex-shrink-0 pt-4 border-t border-border mt-2">
             <Button
               type="button"
               variant="outline"
