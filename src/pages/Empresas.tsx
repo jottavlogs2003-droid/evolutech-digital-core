@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { syncCompanyModules } from '@/hooks/useCompanyModules';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -258,11 +259,19 @@ const Empresas: React.FC = () => {
           }
         }
 
+        // Sync modules from template to company
+        if (data && formData.sistema_base_id) {
+          const synced = await syncCompanyModules(data.id, formData.sistema_base_id);
+          if (!synced) {
+            toast.warning('Módulos do template não foram sincronizados automaticamente');
+          }
+        }
+
         await logAudit({
           action: 'create',
           entityType: 'company',
           entityId: data.id,
-          details: { name: formData.name },
+          details: { name: formData.name, sistema_base_id: formData.sistema_base_id },
         });
 
         toast.success('Empresa criada com sucesso');
