@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { syncCompanyModules } from '@/hooks/useCompanyModules';
+import { syncCustomModulesToCompany } from '@/hooks/useSyncCompanyModules';
+import { TemplateModulesSelector } from '@/components/empresa/TemplateModulesSelector';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -39,7 +40,6 @@ import {
   Building2, 
   Plus, 
   Search, 
-  Users, 
   MoreVertical,
   Filter,
   ArrowUpDown,
@@ -58,12 +58,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-interface SistemaBase {
-  id: string;
-  nome: string;
-  nicho: string;
-}
-
 const planColors = {
   starter: 'bg-muted text-muted-foreground border-border',
   professional: 'bg-role-admin-evolutech/20 text-role-admin-evolutech border-role-admin-evolutech/30',
@@ -76,7 +70,6 @@ const Empresas: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [empresas, setEmpresas] = useState<Company[]>([]);
-  const [sistemasBase, setSistemasBase] = useState<SistemaBase[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -84,6 +77,7 @@ const Empresas: React.FC = () => {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedModules, setSelectedModules] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -107,19 +101,8 @@ const Empresas: React.FC = () => {
     setIsLoading(false);
   };
 
-  const fetchSistemasBase = async () => {
-    const { data } = await supabase
-      .from('sistemas_base')
-      .select('id, nome, nicho')
-      .eq('status', 'active')
-      .order('nome');
-    
-    setSistemasBase(data || []);
-  };
-
   useEffect(() => {
     fetchEmpresas();
-    fetchSistemasBase();
   }, []);
 
   const filteredEmpresas = empresas.filter(empresa =>
@@ -137,10 +120,12 @@ const Empresas: React.FC = () => {
         sistema_base_id: (company as any).sistema_base_id || '',
       });
       setLogoPreview(company.logo_url || null);
+      setSelectedModules([]); // Will be loaded by TemplateModulesSelector
     } else {
       setSelectedCompany(null);
       setFormData({ name: '', slug: '', plan: 'starter', monthly_revenue: 0, sistema_base_id: '' });
       setLogoPreview(null);
+      setSelectedModules([]);
     }
     setLogoFile(null);
     setIsDialogOpen(true);
@@ -259,11 +244,11 @@ const Empresas: React.FC = () => {
           }
         }
 
-        // Sync modules from template to company
-        if (data && formData.sistema_base_id) {
-          const synced = await syncCompanyModules(data.id, formData.sistema_base_id);
+        // Sync selected modules to company
+        if (data && selectedModules.length > 0) {
+          const synced = await syncCustomModulesToCompany(data.id, selectedModules);
           if (!synced) {
-            toast.warning('Módulos do template não foram sincronizados automaticamente');
+            toast.warning('Módulos não foram sincronizados automaticamente');
           }
         }
 
@@ -614,27 +599,15 @@ const Empresas: React.FC = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="sistema_base">Sistema Base</Label>
-                <Select
-                  value={formData.sistema_base_id}
-                  onValueChange={(value) => 
-                    setFormData({ ...formData, sistema_base_id: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sistemasBase.map((sb) => (
-                      <SelectItem key={sb.id} value={sb.id}>
-                        {sb.nome} ({sb.nicho})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
+            
+            {/* Template and Modules Selector */}
+            <TemplateModulesSelector
+              selectedTemplateId={formData.sistema_base_id}
+              onTemplateChange={(templateId) => setFormData({ ...formData, sistema_base_id: templateId })}
+              selectedModules={selectedModules}
+              onModulesChange={setSelectedModules}
+            />
             <div className="space-y-2">
               <Label htmlFor="revenue">Receita Mensal (R$)</Label>
               <Input
