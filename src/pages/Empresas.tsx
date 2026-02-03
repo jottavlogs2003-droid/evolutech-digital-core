@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { syncCustomModulesToCompany } from '@/hooks/useSyncCompanyModules';
+import { useEditCompanyModules } from '@/hooks/useEditCompanyModules';
 import { TemplateModulesSelector } from '@/components/empresa/TemplateModulesSelector';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -187,7 +188,7 @@ const Empresas: React.FC = () => {
     const slug = formData.slug || generateSlug(formData.name);
     setIsUploading(true);
 
-    try {
+  try {
       if (selectedCompany) {
         let logoUrl = selectedCompany.logo_url;
         
@@ -210,11 +211,19 @@ const Empresas: React.FC = () => {
 
         if (error) throw error;
 
+        // Sync modules for existing company
+        if (selectedModules.length > 0) {
+          const synced = await syncCustomModulesToCompany(selectedCompany.id, selectedModules);
+          if (!synced) {
+            toast.warning('Módulos não foram sincronizados automaticamente');
+          }
+        }
+
         await logAudit({
           action: 'update',
           entityType: 'company',
           entityId: selectedCompany.id,
-          details: { name: formData.name },
+          details: { name: formData.name, modules_count: selectedModules.length },
         });
 
         toast.success('Empresa atualizada com sucesso');
@@ -608,6 +617,8 @@ const Empresas: React.FC = () => {
               onTemplateChange={(templateId) => setFormData({ ...formData, sistema_base_id: templateId })}
               selectedModules={selectedModules}
               onModulesChange={setSelectedModules}
+              companyId={selectedCompany?.id}
+              mode={selectedCompany ? 'edit' : 'create'}
             />
             <div className="space-y-2">
               <Label htmlFor="revenue">Receita Mensal (R$)</Label>

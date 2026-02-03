@@ -28,6 +28,7 @@ import {
   ShoppingCart,
   Warehouse,
   Smartphone,
+  Palette,
 } from 'lucide-react';
 
 interface NavItem {
@@ -62,7 +63,8 @@ const navItems: NavItem[] = [
   { icon: HeadphonesIcon, label: 'Suporte', path: '/empresa/suporte', moduleCode: 'support', alwaysShow: true },
   { icon: GraduationCap, label: 'Treinamentos', path: '/empresa/treinamentos', moduleCode: 'training' },
   
-  // Settings (always for owners)
+  // Customization & Settings (always for owners)
+  { icon: Palette, label: 'Personalização', path: '/empresa/personalizacao', moduleCode: 'design', ownerOnly: true, alwaysShow: true },
   { icon: Settings, label: 'Configurações', path: '/empresa/configuracoes', moduleCode: 'settings', ownerOnly: true, alwaysShow: true },
 ];
 
