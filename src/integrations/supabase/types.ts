@@ -428,6 +428,110 @@ export type Database = {
           },
         ]
       }
+      company_themes: {
+        Row: {
+          accent_color: string | null
+          accent_foreground: string | null
+          background_color: string | null
+          border_color: string | null
+          border_radius: string | null
+          card_color: string | null
+          card_foreground: string | null
+          company_display_name: string | null
+          company_id: string
+          created_at: string
+          dark_mode_enabled: boolean | null
+          destructive_color: string | null
+          favicon_path: string | null
+          font_family: string | null
+          foreground_color: string | null
+          id: string
+          login_cover_path: string | null
+          logo_path: string | null
+          muted_color: string | null
+          muted_foreground: string | null
+          primary_color: string | null
+          primary_foreground: string | null
+          secondary_color: string | null
+          secondary_foreground: string | null
+          sidebar_accent: string | null
+          sidebar_background: string | null
+          sidebar_foreground: string | null
+          sidebar_primary: string | null
+          updated_at: string
+        }
+        Insert: {
+          accent_color?: string | null
+          accent_foreground?: string | null
+          background_color?: string | null
+          border_color?: string | null
+          border_radius?: string | null
+          card_color?: string | null
+          card_foreground?: string | null
+          company_display_name?: string | null
+          company_id: string
+          created_at?: string
+          dark_mode_enabled?: boolean | null
+          destructive_color?: string | null
+          favicon_path?: string | null
+          font_family?: string | null
+          foreground_color?: string | null
+          id?: string
+          login_cover_path?: string | null
+          logo_path?: string | null
+          muted_color?: string | null
+          muted_foreground?: string | null
+          primary_color?: string | null
+          primary_foreground?: string | null
+          secondary_color?: string | null
+          secondary_foreground?: string | null
+          sidebar_accent?: string | null
+          sidebar_background?: string | null
+          sidebar_foreground?: string | null
+          sidebar_primary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accent_color?: string | null
+          accent_foreground?: string | null
+          background_color?: string | null
+          border_color?: string | null
+          border_radius?: string | null
+          card_color?: string | null
+          card_foreground?: string | null
+          company_display_name?: string | null
+          company_id?: string
+          created_at?: string
+          dark_mode_enabled?: boolean | null
+          destructive_color?: string | null
+          favicon_path?: string | null
+          font_family?: string | null
+          foreground_color?: string | null
+          id?: string
+          login_cover_path?: string | null
+          logo_path?: string | null
+          muted_color?: string | null
+          muted_foreground?: string | null
+          primary_color?: string | null
+          primary_foreground?: string | null
+          secondary_color?: string | null
+          secondary_foreground?: string | null
+          sidebar_accent?: string | null
+          sidebar_background?: string | null
+          sidebar_foreground?: string | null
+          sidebar_primary?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_themes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           address: string | null

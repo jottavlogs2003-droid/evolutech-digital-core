@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthGuard } from "@/components/guards/AuthGuard";
 import { RoleRedirect } from "@/components/guards/RoleRedirect";
 import { AdminEvolutechLayout } from "@/components/layouts/AdminEvolutechLayout";
@@ -47,6 +48,7 @@ import Agendamentos from "./pages/empresa/Agendamentos";
 import Pedidos from "./pages/empresa/Pedidos";
 import Caixa from "./pages/empresa/Caixa";
 import Relatorios from "./pages/empresa/Relatorios";
+import Personalizacao from "./pages/empresa/Personalizacao";
 
 const queryClient = new QueryClient();
 
@@ -54,10 +56,11 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
+        <ThemeProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/vendas" element={<LandingVendas />} />
@@ -181,6 +184,14 @@ const App = () => (
                   </AuthGuard>
                 } 
               />
+              <Route 
+                path="/empresa/personalizacao" 
+                element={
+                  <AuthGuard allowedRoles={['DONO_EMPRESA']}>
+                    <Personalizacao />
+                  </AuthGuard>
+                } 
+              />
             </Route>
 
             {/* ============================================ */}
@@ -202,6 +213,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </ThemeProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

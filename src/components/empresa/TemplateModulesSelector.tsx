@@ -47,6 +47,8 @@ interface TemplateModulesSelectorProps {
   onTemplateChange: (templateId: string) => void;
   selectedModules: string[];
   onModulesChange: (moduleIds: string[]) => void;
+  companyId?: string | null; // For edit mode - load existing company modules
+  mode?: 'create' | 'edit';
 }
 
 export const TemplateModulesSelector: React.FC<TemplateModulesSelectorProps> = ({
@@ -54,6 +56,8 @@ export const TemplateModulesSelector: React.FC<TemplateModulesSelectorProps> = (
   onTemplateChange,
   selectedModules,
   onModulesChange,
+  companyId = null,
+  mode = 'create',
 }) => {
   const [templates, setTemplates] = useState<SistemaBase[]>([]);
   const [templateModulos, setTemplateModulos] = useState<TemplateModulo[]>([]);
@@ -95,11 +99,59 @@ export const TemplateModulesSelector: React.FC<TemplateModulesSelectorProps> = (
     fetchModulos();
   }, []);
 
-  // Fetch modules for selected template
+  // Fetch existing company modules (for edit mode)
+  const fetchCompanyModules = useCallback(async () => {
+    if (!companyId || mode !== 'edit') return;
+
+    setIsLoadingModules(true);
+    
+    const { data, error } = await supabase
+      .from('empresa_modulos')
+      .select(`
+        modulo_id,
+        ativo,
+        modulos (
+          id,
+          codigo,
+          nome,
+          descricao,
+          is_core,
+          icone
+        )
+      `)
+      .eq('empresa_id', companyId)
+      .eq('ativo', true);
+
+    if (error) {
+      console.error('Error fetching company modules:', error);
+      setIsLoadingModules(false);
+      return;
+    }
+
+    const modulosWithData = (data || [])
+      .filter((item: any) => item.modulos)
+      .map((item: any) => ({
+        modulo_id: item.modulo_id,
+        is_default: true,
+        modulo: item.modulos as Modulo,
+      }));
+
+    setTemplateModulos(modulosWithData);
+    
+    // Set selected modules from company
+    const moduleIds = modulosWithData.map(m => m.modulo_id);
+    onModulesChange(moduleIds);
+    
+    setIsLoadingModules(false);
+  }, [companyId, mode, onModulesChange]);
+
+  // Fetch modules for selected template (create mode)
   const fetchTemplateModules = useCallback(async (templateId: string) => {
-    if (!templateId) {
-      setTemplateModulos([]);
-      onModulesChange([]);
+    if (!templateId || mode === 'edit') {
+      if (mode !== 'edit') {
+        setTemplateModulos([]);
+        onModulesChange([]);
+      }
       return;
     }
 
@@ -142,13 +194,21 @@ export const TemplateModulesSelector: React.FC<TemplateModulesSelectorProps> = (
     onModulesChange(moduleIds);
     
     setIsLoadingModules(false);
-  }, [onModulesChange]);
+  }, [mode, onModulesChange]);
 
+  // Load company modules in edit mode
   useEffect(() => {
-    if (selectedTemplateId) {
+    if (mode === 'edit' && companyId) {
+      fetchCompanyModules();
+    }
+  }, [mode, companyId, fetchCompanyModules]);
+
+  // Load template modules in create mode
+  useEffect(() => {
+    if (mode === 'create' && selectedTemplateId) {
       fetchTemplateModules(selectedTemplateId);
     }
-  }, [selectedTemplateId, fetchTemplateModules]);
+  }, [mode, selectedTemplateId, fetchTemplateModules]);
 
   const handleTemplateChange = (templateId: string) => {
     onTemplateChange(templateId);
