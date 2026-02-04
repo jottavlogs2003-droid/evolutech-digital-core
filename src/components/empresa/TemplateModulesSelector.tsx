@@ -273,7 +273,11 @@ export const TemplateModulesSelector: React.FC<TemplateModulesSelectorProps> = (
           <SelectTrigger>
             <SelectValue placeholder="Selecione um template..." />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent 
+            position="popper" 
+            sideOffset={4}
+            className="max-h-[300px]"
+          >
             {Object.entries(templatesByNiche).map(([niche, nicheTemplates]) => (
               <div key={niche}>
                 <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-secondary/50">

@@ -48,12 +48,22 @@ interface Company {
 }
 
 const PROVEDORES = [
-  { value: 'stripe', label: 'Stripe', icon: '💳' },
-  { value: 'mercadopago', label: 'Mercado Pago', icon: '🟡' },
-  { value: 'pagseguro', label: 'PagSeguro', icon: '🟢' },
-  { value: 'asaas', label: 'Asaas', icon: '🔵' },
-  { value: 'pix', label: 'PIX Direto', icon: '💚' },
-  { value: 'outro', label: 'Outro', icon: '⚙️' },
+  { value: 'stripe', label: 'Stripe', icon: '💳', description: 'Pagamentos internacionais e cartões' },
+  { value: 'mercadopago', label: 'Mercado Pago', icon: '🟡', description: 'Líder na América Latina' },
+  { value: 'pagseguro', label: 'PagSeguro', icon: '🟢', description: 'Gateway tradicional brasileiro' },
+  { value: 'pagbank', label: 'PagBank', icon: '🔵', description: 'Banco digital + gateway' },
+  { value: 'asaas', label: 'Asaas', icon: '⚫', description: 'Cobranças e assinaturas' },
+  { value: 'pix', label: 'PIX Direto', icon: '💚', description: 'Pagamentos instantâneos' },
+  { value: 'pagarme', label: 'Pagar.me', icon: '🟣', description: 'API moderna e flexível' },
+  { value: 'cielo', label: 'Cielo', icon: '🔷', description: 'Maior adquirente do Brasil' },
+  { value: 'rede', label: 'Rede (Itaú)', icon: '🟠', description: 'Gateway do Itaú Unibanco' },
+  { value: 'getnet', label: 'Getnet (Santander)', icon: '🔴', description: 'Gateway do Santander' },
+  { value: 'infinitepay', label: 'InfinitePay', icon: '🟢', description: 'Taxas competitivas' },
+  { value: 'iugu', label: 'Iugu', icon: '🟡', description: 'Gestão financeira completa' },
+  { value: 'juno', label: 'Juno', icon: '🟢', description: 'Boletos e cartões' },
+  { value: 'efi', label: 'Efí (Gerencianet)', icon: '💙', description: 'PIX e boletos' },
+  { value: 'paypal', label: 'PayPal', icon: '🅿️', description: 'Pagamentos globais' },
+  { value: 'outro', label: 'Outro', icon: '⚙️', description: 'Gateway personalizado' },
 ];
 
 const GatewaysPagamento: React.FC = () => {

@@ -29,6 +29,7 @@ import {
   MessageSquare,
   UserPlus,
   Bot,
+  FileCheck,
 } from 'lucide-react';
 
 interface NavItem {
@@ -54,6 +55,7 @@ const navItems: NavItem[] = [
   { icon: BarChart3, label: 'Métricas Globais', path: '/admin-evolutech/metricas', superAdminOnly: true },
   { icon: CreditCard, label: 'Financeiro', path: '/admin-evolutech/financeiro', superAdminOnly: true },
   { icon: FileText, label: 'Logs', path: '/admin-evolutech/logs' },
+  { icon: FileCheck, label: 'Verificação', path: '/admin-evolutech/verificacao' },
   { icon: Settings, label: 'Configurações', path: '/admin-evolutech/configuracoes' },
 ];
 
