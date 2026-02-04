@@ -24,6 +24,7 @@ import GatewaysPagamento from "./pages/admin/GatewaysPagamento";
 import WhatsAppAutomacao from "./pages/admin/WhatsAppAutomacao";
 import GerenciarUsuarios from "./pages/admin/GerenciarUsuarios";
 import ChatbotsManager from "./pages/admin/ChatbotsManager";
+import SystemVerification from "./pages/admin/SystemVerification";
 import Empresas from "./pages/Empresas";
 import Usuarios from "./pages/Usuarios";
 import Configuracoes from "./pages/Configuracoes";
@@ -99,6 +100,7 @@ const App = () => (
               <Route path="/admin-evolutech/evolucoes" element={<Evolucoes />} />
               <Route path="/admin-evolutech/treinamentos" element={<Treinamentos />} />
               <Route path="/admin-evolutech/logs" element={<Logs />} />
+              <Route path="/admin-evolutech/verificacao" element={<SystemVerification />} />
               <Route path="/admin-evolutech/configuracoes" element={<Configuracoes />} />
               
               {/* Super Admin Only */}

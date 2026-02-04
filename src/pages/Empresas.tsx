@@ -474,8 +474,13 @@ const Empresas: React.FC = () => {
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleOpenDialog(empresa)}>
+                        <DropdownMenuContent align="end" onCloseAutoFocus={(e) => e.preventDefault()}>
+                          <DropdownMenuItem 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setTimeout(() => handleOpenDialog(empresa), 100);
+                            }}
+                          >
                             <Pencil className="h-4 w-4 mr-2" />
                             Editar
                           </DropdownMenuItem>
@@ -497,9 +502,12 @@ const Empresas: React.FC = () => {
                               <DropdownMenuSeparator />
                               <DropdownMenuItem 
                                 className="text-destructive focus:text-destructive"
-                                onClick={() => {
-                                  setSelectedCompany(empresa);
-                                  setIsDeleteDialogOpen(true);
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setTimeout(() => {
+                                    setSelectedCompany(empresa);
+                                    setIsDeleteDialogOpen(true);
+                                  }, 100);
                                 }}
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
