@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { syncCustomModulesToCompany } from '@/hooks/useSyncCompanyModules';
+import { syncCustomModulesToCompany, syncTemplateModulesToCompany } from '@/hooks/useSyncCompanyModules';
 import { useEditCompanyModules } from '@/hooks/useEditCompanyModules';
 import { TemplateModulesSelector } from '@/components/empresa/TemplateModulesSelector';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -253,10 +253,19 @@ const Empresas: React.FC = () => {
           }
         }
 
-        // Sync selected modules to company
-        if (data && selectedModules.length > 0) {
-          const synced = await syncCustomModulesToCompany(data.id, selectedModules);
-          if (!synced) {
+        // Sync modules: first try custom selection, then fallback to template defaults
+        if (data) {
+          let synced = false;
+          
+          if (selectedModules.length > 0) {
+            // User selected specific modules
+            synced = await syncCustomModulesToCompany(data.id, selectedModules);
+          } else if (formData.sistema_base_id) {
+            // No custom selection, use template defaults
+            synced = await syncTemplateModulesToCompany(data.id, formData.sistema_base_id);
+          }
+          
+          if (!synced && (selectedModules.length > 0 || formData.sistema_base_id)) {
             toast.warning('Módulos não foram sincronizados automaticamente');
           }
         }

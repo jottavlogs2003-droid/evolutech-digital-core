@@ -30,6 +30,7 @@ import {
   UserPlus,
   Bot,
   FileCheck,
+  Palette,
 } from 'lucide-react';
 
 interface NavItem {
@@ -56,6 +57,7 @@ const navItems: NavItem[] = [
   { icon: CreditCard, label: 'Financeiro', path: '/admin-evolutech/financeiro', superAdminOnly: true },
   { icon: FileText, label: 'Logs', path: '/admin-evolutech/logs' },
   { icon: FileCheck, label: 'Verificação', path: '/admin-evolutech/verificacao' },
+  { icon: Palette, label: 'Temas', path: '/admin-evolutech/temas' },
   { icon: Settings, label: 'Configurações', path: '/admin-evolutech/configuracoes' },
 ];
 

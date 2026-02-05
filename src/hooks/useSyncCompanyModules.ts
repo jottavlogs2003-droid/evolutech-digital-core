@@ -1,6 +1,70 @@
 import { supabase } from '@/integrations/supabase/client';
 
 /**
+ * Sync modules from template to a company
+ * This is called when creating a new company with a template
+ */
+export const syncTemplateModulesToCompany = async (
+  companyId: string,
+  templateId: string
+): Promise<boolean> => {
+  if (!companyId || !templateId) {
+    return false;
+  }
+
+  try {
+    // Fetch modules from the template
+    const { data: templateModules, error: templateError } = await supabase
+      .from('sistema_base_modulos')
+      .select(`
+        modulo_id,
+        is_default,
+        modulos (
+          id,
+          is_core
+        )
+      `)
+      .eq('sistema_base_id', templateId);
+
+    if (templateError) {
+      console.error('Error fetching template modules:', templateError);
+      return false;
+    }
+
+    if (!templateModules || templateModules.length === 0) {
+      console.warn('No modules found for template:', templateId);
+      return true; // Not an error, just no modules
+    }
+
+    // Prepare inserts
+    const inserts = templateModules.map((tm: any) => ({
+      empresa_id: companyId,
+      modulo_id: tm.modulo_id,
+      ativo: true,
+      obrigatorio: tm.modulos?.is_core || false,
+    }));
+
+    // Upsert modules
+    const { error: insertError } = await supabase
+      .from('empresa_modulos')
+      .upsert(inserts, {
+        onConflict: 'empresa_id,modulo_id',
+      });
+
+    if (insertError) {
+      console.error('Error syncing template modules:', insertError);
+      return false;
+    }
+
+    console.log(`Synced ${inserts.length} modules from template to company`);
+    return true;
+  } catch (err) {
+    console.error('Error in syncTemplateModulesToCompany:', err);
+    return false;
+  }
+};
+
+/**
  * Sync specific modules to a company
  * This allows for custom module selection during company creation
  */
