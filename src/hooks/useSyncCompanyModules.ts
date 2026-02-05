@@ -36,12 +36,12 @@ export const syncTemplateModulesToCompany = async (
       return true; // Not an error, just no modules
     }
 
-    // Prepare inserts
+    // Prepare inserts - all modules are optional now
     const inserts = templateModules.map((tm: any) => ({
       empresa_id: companyId,
       modulo_id: tm.modulo_id,
       ativo: true,
-      obrigatorio: tm.modulos?.is_core || false,
+      obrigatorio: false, // All modules are optional
     }));
 
     // Upsert modules
@@ -88,14 +88,13 @@ export const syncCustomModulesToCompany = async (
       return false;
     }
 
-    // Prepare inserts
+    // Prepare inserts - all modules are optional now
     const inserts = moduleIds.map(moduleId => {
-      const moduleInfo = modulesInfo?.find(m => m.id === moduleId);
       return {
         empresa_id: companyId,
         modulo_id: moduleId,
         ativo: true,
-        obrigatorio: moduleInfo?.is_core || false,
+        obrigatorio: false, // All modules are optional
       };
     });
 

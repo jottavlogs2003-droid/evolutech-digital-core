@@ -56,9 +56,9 @@ export const useCompanyModules = () => {
             codigo: item.modulos.codigo?.toLowerCase() || '',
             nome: item.modulos.nome,
             icone: item.modulos.icone,
-            is_core: item.modulos.is_core || false,
+            is_core: false, // All modules are now available
             ativo: item.ativo,
-            obrigatorio: item.obrigatorio || false,
+            obrigatorio: false, // No mandatory modules
           }));
 
         setModules(mappedModules);
