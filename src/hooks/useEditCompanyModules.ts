@@ -58,9 +58,9 @@ export const useEditCompanyModules = (companyId: string | null) => {
             codigo: item.modulos.codigo,
             nome: item.modulos.nome,
             icone: item.modulos.icone,
-            is_core: item.modulos.is_core || false,
+            is_core: false, // All modules are now available
             ativo: item.ativo ?? true,
-            obrigatorio: item.obrigatorio || false,
+            obrigatorio: false, // All modules are optional
           }));
 
         setModules(mappedModules);
@@ -126,14 +126,13 @@ export const useEditCompanyModules = (companyId: string | null) => {
           .select('id, is_core')
           .in('id', newModuleIds);
 
-        // Prepare inserts
+        // Prepare inserts - all modules are optional
         const inserts = newModuleIds.map(moduleId => {
-          const moduleInfo = modulesInfo?.find(m => m.id === moduleId);
           return {
             empresa_id: companyId,
             modulo_id: moduleId,
             ativo: true,
-            obrigatorio: moduleInfo?.is_core || false,
+            obrigatorio: false, // All modules are optional
           };
         });
 
@@ -147,19 +146,15 @@ export const useEditCompanyModules = (companyId: string | null) => {
         }
       }
 
-      // Deactivate modules that were removed
+      // Deactivate modules that were removed - all modules can be deactivated now
       const removedModuleIds = existingModuleIds.filter(id => !moduleIds.includes(id));
       
       for (const moduleId of removedModuleIds) {
-        // Check if it's a core module - don't deactivate those
-        const module = modules.find(m => m.modulo_id === moduleId);
-        if (module && !module.is_core) {
-          await supabase
-            .from('empresa_modulos')
-            .update({ ativo: false })
-            .eq('empresa_id', companyId)
-            .eq('modulo_id', moduleId);
-        }
+        await supabase
+          .from('empresa_modulos')
+          .update({ ativo: false })
+          .eq('empresa_id', companyId)
+          .eq('modulo_id', moduleId);
       }
 
       // Refresh

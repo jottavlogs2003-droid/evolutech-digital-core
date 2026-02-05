@@ -155,14 +155,13 @@ const SystemVerification: React.FC = () => {
         message: templatesError ? 'Erro ao buscar templates' : `${templates?.length || 0} templates`,
       });
 
-      const { data: modules } = await supabase.from('modulos').select('id, nome, is_core, status');
+      const { data: modules } = await supabase.from('modulos').select('id, nome, status');
       const activeModules = modules?.filter(m => m.status === 'active') || [];
-      const coreModules = modules?.filter(m => m.is_core) || [];
       
       templateChecks.push({
-        name: 'Módulos Ativos',
+        name: 'Módulos Disponíveis',
         status: activeModules.length > 0 ? 'success' : 'warning',
-        message: `${activeModules.length} módulos ativos (${coreModules.length} core)`,
+        message: `${activeModules.length} módulos disponíveis para uso`,
       });
 
       const { data: templateModules } = await supabase

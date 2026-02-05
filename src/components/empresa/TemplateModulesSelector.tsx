@@ -214,9 +214,8 @@ export const TemplateModulesSelector: React.FC<TemplateModulesSelectorProps> = (
     onTemplateChange(templateId);
   };
 
-  const handleModuleToggle = (moduleId: string, isCore: boolean) => {
-    if (isCore) return; // Core modules cannot be toggled
-    
+  const handleModuleToggle = (moduleId: string) => {
+    // All modules can be toggled now - no core restriction
     if (selectedModules.includes(moduleId)) {
       onModulesChange(selectedModules.filter(id => id !== moduleId));
     } else {
@@ -339,19 +338,13 @@ export const TemplateModulesSelector: React.FC<TemplateModulesSelectorProps> = (
                           <Checkbox
                             id={tm.modulo_id}
                             checked={selectedModules.includes(tm.modulo_id)}
-                            onCheckedChange={() => handleModuleToggle(tm.modulo_id, tm.modulo.is_core)}
-                            disabled={tm.modulo.is_core}
+                            onCheckedChange={() => handleModuleToggle(tm.modulo_id)}
                           />
                           <label
                             htmlFor={tm.modulo_id}
                             className="flex-1 text-sm cursor-pointer flex items-center gap-2"
                           >
                             <span>{tm.modulo.nome}</span>
-                            {tm.modulo.is_core && (
-                              <Badge variant="outline" className="text-xs bg-primary/20 text-primary border-primary/30">
-                                Core
-                              </Badge>
-                            )}
                           </label>
                         </div>
                       ))
@@ -374,19 +367,13 @@ export const TemplateModulesSelector: React.FC<TemplateModulesSelectorProps> = (
                           <Checkbox
                             id={`add-${modulo.id}`}
                             checked={selectedModules.includes(modulo.id)}
-                            onCheckedChange={() => handleModuleToggle(modulo.id, modulo.is_core)}
-                            disabled={modulo.is_core}
+                            onCheckedChange={() => handleModuleToggle(modulo.id)}
                           />
                           <label
                             htmlFor={`add-${modulo.id}`}
                             className="flex-1 text-sm cursor-pointer flex items-center gap-2"
                           >
                             <span>{modulo.nome}</span>
-                            {modulo.is_core && (
-                              <Badge variant="outline" className="text-xs bg-primary/20 text-primary border-primary/30">
-                                Core
-                              </Badge>
-                            )}
                           </label>
                         </div>
                       ))}
