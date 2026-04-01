@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
@@ -34,9 +34,7 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login, signup, isAuthenticated, getRedirectPath } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       const redirectPath = getRedirectPath();
@@ -66,14 +64,11 @@ const Login: React.FC = () => {
       
       if (isSignup) {
         await signup(email, password, fullName);
-        // Auto-login after signup
         await login(email, password);
         toast.success('Conta criada com sucesso!');
-        // Redirect will be handled by useEffect when isAuthenticated changes
       } else {
         await login(email, password);
         toast.success('Login realizado com sucesso!');
-        // Redirect will be handled by useEffect when isAuthenticated changes
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erro ao processar';
@@ -91,45 +86,40 @@ const Login: React.FC = () => {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background p-4">
-      {/* Background effects */}
-      <div className="absolute inset-0 gradient-dark" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 gradient-glow opacity-60 blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
-      
-      {/* Grid pattern */}
+      {/* Subtle grid */}
       <div 
-        className="absolute inset-0 opacity-[0.02]"
+        className="absolute inset-0 opacity-[0.03]"
         style={{
-          backgroundImage: 'linear-gradient(hsl(var(--border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
+          backgroundImage: 'linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)',
+          backgroundSize: '80px 80px',
         }}
       />
 
       {/* Login card */}
       <div className="relative z-10 w-full max-w-md animate-slide-up">
-        <div className="glass rounded-2xl p-8 shadow-elevated">
+        <div className="rounded-2xl border border-border bg-card p-8">
           {/* Header */}
           <div className="mb-8 text-center">
             <div className="mb-6 flex justify-center">
               <Logo size="lg" />
             </div>
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl font-bold text-foreground">
               {isSignup ? 'Criar conta' : 'Bem-vindo de volta'}
             </h1>
-            <p className="mt-2 text-muted-foreground">
+            <p className="mt-2 text-sm text-muted-foreground">
               {isSignup 
                 ? 'Preencha os dados para criar sua conta' 
-                : 'Entre com suas credenciais para acessar o sistema'}
+                : 'Entre com suas credenciais para continuar'}
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {isSignup && (
               <div className="space-y-2">
-                <Label htmlFor="fullName">Nome completo</Label>
+                <Label htmlFor="fullName" className="text-sm text-muted-foreground">Nome completo</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                  <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="fullName"
                     type="text"
@@ -144,9 +134,9 @@ const Login: React.FC = () => {
             )}
             
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm text-muted-foreground">Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
@@ -160,9 +150,9 @@ const Login: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="password" className="text-sm text-muted-foreground">Senha</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
@@ -177,16 +167,16 @@ const Login: React.FC = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
             {isSignup && (
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmar senha</Label>
+                <Label htmlFor="confirmPassword" className="text-sm text-muted-foreground">Confirmar senha</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="confirmPassword"
                     type={showPassword ? 'text' : 'password'}
@@ -202,9 +192,8 @@ const Login: React.FC = () => {
 
             <Button
               type="submit"
-              variant="glow"
               size="lg"
-              className="w-full"
+              className="w-full bg-foreground text-background hover:bg-foreground/90 font-semibold"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -221,7 +210,7 @@ const Login: React.FC = () => {
             </Button>
           </form>
 
-          {/* Toggle signup/login */}
+          {/* Toggle */}
           <div className="mt-6 text-center text-sm">
             <span className="text-muted-foreground">
               {isSignup ? 'Já tem uma conta?' : 'Não tem uma conta?'}
@@ -233,16 +222,15 @@ const Login: React.FC = () => {
                 setPassword('');
                 setConfirmPassword('');
               }}
-              className="text-primary hover:underline font-medium"
+              className="text-foreground hover:underline font-medium"
             >
               {isSignup ? 'Fazer login' : 'Criar conta'}
             </button>
           </div>
         </div>
 
-        {/* Footer */}
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Evolutech Digital. Todos os direitos reservados.
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          © {new Date().getFullYear()} Nexify Group. Todos os direitos reservados.
         </p>
       </div>
     </div>
