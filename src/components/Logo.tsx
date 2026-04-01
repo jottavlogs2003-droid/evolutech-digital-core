@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import logoEvolutech from '@/assets/logo-evolutech.png';
-import logoWordmark from '@/assets/logo-evolutech-wordmark.png';
+import logoNexify from '@/assets/logo-nexify.png';
+import logoWordmark from '@/assets/logo-nexify-wordmark.png';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -23,47 +23,41 @@ export const Logo: React.FC<LogoProps> = ({
     xl: { icon: 'w-12 h-12', text: 'text-2xl', wordmark: 'h-14' },
   };
 
-  // Wordmark only variant (cinematic logo)
   if (variant === 'wordmark') {
     return (
       <img 
         src={logoWordmark} 
-        alt="Evolutech" 
+        alt="Nexify Group" 
         className={cn(sizes[size].wordmark, 'object-contain', className)}
       />
     );
   }
 
-  // Icon only variant
   if (variant === 'icon') {
     return (
       <img 
-        src={logoEvolutech} 
-        alt="Evolutech" 
+        src={logoNexify} 
+        alt="Nexify" 
         className={cn(sizes[size].icon, 'object-contain', className)}
       />
     );
   }
 
-  // Full variant with icon and text
   return (
-    <div className={cn('flex items-center gap-2', className)}>
-      <img 
-        src={logoEvolutech} 
-        alt="Evolutech" 
-        className={cn(sizes[size].icon, 'object-contain')}
-      />
-      
+    <div className={cn('flex items-center gap-2.5', className)}>
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground">
+        <span className="text-sm font-black text-background tracking-tight">N</span>
+      </div>
       {showText && (
-        <div className="flex flex-col leading-tight">
+        <div className="flex flex-col leading-none">
           <span className={cn(
-            'font-bold tracking-tight text-gradient',
+            'font-bold tracking-tight text-foreground',
             sizes[size].text
           )}>
-            EVOLUTECH
+            NEXIFY
           </span>
-          <span className="text-[10px] font-medium text-muted-foreground tracking-widest uppercase">
-            Digital
+          <span className="text-[9px] font-medium text-muted-foreground tracking-[0.25em] uppercase">
+            Group
           </span>
         </div>
       )}

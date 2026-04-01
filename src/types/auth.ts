@@ -187,7 +187,7 @@ export interface AuthState {
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   SUPER_ADMIN_EVOLUTECH: 'Super Admin',
-  ADMIN_EVOLUTECH: 'Admin Evolutech',
+  ADMIN_EVOLUTECH: 'Admin',
   DONO_EMPRESA: 'Dono da Empresa',
   FUNCIONARIO_EMPRESA: 'Funcionário',
 };

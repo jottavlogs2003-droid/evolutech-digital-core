@@ -27,8 +27,8 @@ const Dashboard: React.FC = () => {
           Olá, {user?.name?.split(' ')[0]}! 👋
         </h1>
         <p className="text-muted-foreground">
-          {isSuperAdmin && 'Visão geral completa da plataforma Evolutech Digital'}
-          {!isSuperAdmin && isEvolutechTeam && 'Gerencie os clientes e projetos da Evolutech'}
+          {isSuperAdmin && 'Visão geral completa da plataforma'}
+          {!isSuperAdmin && isEvolutechTeam && 'Gerencie os clientes e projetos'}
           {isClientAdmin && `Gerencie sua empresa: ${user?.tenantName}`}
           {user?.role === 'FUNCIONARIO_EMPRESA' && 'Acesse suas ferramentas e tarefas'}
         </p>
