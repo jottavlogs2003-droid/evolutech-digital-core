@@ -123,9 +123,9 @@ export const AdminEvolutechLayout: React.FC = () => {
         {/* Admin Badge */}
         {!isCollapsed && (
           <div className="px-4 py-3 border-b border-border">
-            <div className="flex items-center gap-2 text-xs font-medium text-primary">
-              <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-              Painel Administrativo Evolutech
+            <div className="flex items-center gap-2 text-xs font-medium text-foreground">
+              <div className="h-2 w-2 rounded-full bg-foreground animate-pulse" />
+              Admin Master — Nexify Group
             </div>
           </div>
         )}
