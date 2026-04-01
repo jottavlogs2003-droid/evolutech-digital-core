@@ -202,8 +202,8 @@ export const AdminEvolutechLayout: React.FC = () => {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <div className="hidden sm:flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-1.5">
-              <span className="text-sm font-medium text-primary">Evolutech Digital</span>
+            <div className="hidden sm:flex items-center gap-2 rounded-lg bg-secondary px-3 py-1.5">
+              <span className="text-sm font-medium text-foreground">Nexify Group</span>
             </div>
           </div>
 
