@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import AcceptInvite from "./pages/AcceptInvite";
 import NotFound from "./pages/NotFound";
 import LandingVendas from "./pages/LandingVendas";
+import Onboarding from "./pages/Onboarding";
 
 // Admin Evolutech pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
