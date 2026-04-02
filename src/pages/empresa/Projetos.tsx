@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Plus, FolderKanban, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const statusColors: Record<string, string> = {
   pendente: 'bg-muted text-muted-foreground',
