@@ -52,6 +52,10 @@ import Pedidos from "./pages/empresa/Pedidos";
 import Caixa from "./pages/empresa/Caixa";
 import Relatorios from "./pages/empresa/Relatorios";
 import Personalizacao from "./pages/empresa/Personalizacao";
+import Projetos from "./pages/empresa/Projetos";
+import Documentos from "./pages/empresa/Documentos";
+import Notificacoes from "./pages/empresa/Notificacoes";
+import ModulosCustom from "./pages/empresa/ModulosCustom";
 
 const queryClient = new QueryClient();
 

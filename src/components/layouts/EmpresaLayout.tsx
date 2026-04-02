@@ -30,43 +30,47 @@ import {
   Warehouse,
   Smartphone,
   Palette,
+  Zap,
+  Megaphone,
+  FolderKanban,
+  FileText,
+  Plug,
+  ScrollText,
+  Box,
 } from 'lucide-react';
 
 interface NavItem {
   icon: React.ElementType;
   label: string;
   path: string;
-  moduleCode?: string; // If tied to a module
-  ownerOnly?: boolean; // Only for DONO_EMPRESA
-  alwaysShow?: boolean; // Always show regardless of modules
+  moduleCode?: string;
+  ownerOnly?: boolean;
+  alwaysShow?: boolean;
 }
 
-// Navigation items - dynamically filtered based on company modules
 const navItems: NavItem[] = [
-  // Core items (always shown based on role)
   { icon: LayoutDashboard, label: 'Dashboard', path: '/empresa/dashboard', moduleCode: 'dashboard', alwaysShow: true },
-  { icon: Smartphone, label: 'Aplicativo', path: '/empresa/app', moduleCode: 'app' },
-  
-  // Business modules
-  { icon: Users, label: 'Clientes', path: '/empresa/clientes', moduleCode: 'customers' },
-  { icon: Package, label: 'Produtos', path: '/empresa/produtos', moduleCode: 'products' },
-  { icon: Warehouse, label: 'Estoque', path: '/empresa/estoque', moduleCode: 'inventory' },
-  { icon: Calendar, label: 'Agendamentos', path: '/empresa/agendamentos', moduleCode: 'appointments' },
-  { icon: ShoppingCart, label: 'Pedidos', path: '/empresa/pedidos', moduleCode: 'orders' },
-  { icon: Wallet, label: 'Caixa', path: '/empresa/caixa', moduleCode: 'cash', ownerOnly: true },
-  { icon: CreditCard, label: 'Financeiro', path: '/empresa/financeiro', moduleCode: 'finance', ownerOnly: true },
-  { icon: BarChart3, label: 'Relatórios', path: '/empresa/relatorios', moduleCode: 'reports', ownerOnly: true },
-  
-  // Team management (core for owners)
-  { icon: UserPlus, label: 'Equipe', path: '/empresa/equipe', moduleCode: 'users', ownerOnly: true },
-  
-  // Support & Training
-  { icon: HeadphonesIcon, label: 'Suporte', path: '/empresa/suporte', moduleCode: 'support', alwaysShow: true },
-  { icon: GraduationCap, label: 'Treinamentos', path: '/empresa/treinamentos', moduleCode: 'training' },
-  
-  // Customization & Settings (always for owners)
-  { icon: Palette, label: 'Personalização', path: '/empresa/personalizacao', moduleCode: 'design', ownerOnly: true, alwaysShow: true },
-  { icon: Settings, label: 'Configurações', path: '/empresa/configuracoes', moduleCode: 'settings', ownerOnly: true, alwaysShow: true },
+  { icon: Smartphone, label: 'Aplicativo', path: '/empresa/app', alwaysShow: true },
+  { icon: Calendar, label: 'Agenda', path: '/empresa/agendamentos', moduleCode: 'agendamentos' },
+  { icon: Users, label: 'CRM de Clientes', path: '/empresa/clientes', moduleCode: 'clientes' },
+  { icon: Wallet, label: 'Financeiro', path: '/empresa/financeiro', moduleCode: 'financeiro', ownerOnly: true },
+  { icon: ShoppingCart, label: 'Vendas e Pedidos', path: '/empresa/pedidos', moduleCode: 'pedidos' },
+  { icon: Package, label: 'Produtos', path: '/empresa/produtos', moduleCode: 'produtos' },
+  { icon: Warehouse, label: 'Estoque', path: '/empresa/estoque', moduleCode: 'estoque' },
+  { icon: CreditCard, label: 'Caixa', path: '/empresa/caixa', moduleCode: 'financeiro', ownerOnly: true },
+  { icon: Zap, label: 'Automação', path: '/empresa/automacao', moduleCode: 'automacao' },
+  { icon: UserPlus, label: 'Equipe', path: '/empresa/equipe', moduleCode: 'equipe', ownerOnly: true },
+  { icon: Megaphone, label: 'Marketing', path: '/empresa/marketing', moduleCode: 'marketing' },
+  { icon: FolderKanban, label: 'Projetos', path: '/empresa/projetos', moduleCode: 'projetos' },
+  { icon: HeadphonesIcon, label: 'Suporte', path: '/empresa/suporte', moduleCode: 'suporte', alwaysShow: true },
+  { icon: FileText, label: 'Documentos', path: '/empresa/documentos', moduleCode: 'documentos' },
+  { icon: Bell, label: 'Notificações', path: '/empresa/notificacoes', moduleCode: 'notificacoes', alwaysShow: true },
+  { icon: BarChart3, label: 'Relatórios', path: '/empresa/relatorios', moduleCode: 'relatorios', ownerOnly: true },
+  { icon: ScrollText, label: 'Auditoria', path: '/empresa/auditoria', moduleCode: 'auditoria', ownerOnly: true },
+  { icon: GraduationCap, label: 'Treinamentos', path: '/empresa/treinamentos', moduleCode: 'treinamentos' },
+  { icon: Box, label: 'Módulos Custom', path: '/empresa/modulos-custom', ownerOnly: true, alwaysShow: true },
+  { icon: Palette, label: 'Personalização', path: '/empresa/personalizacao', ownerOnly: true, alwaysShow: true },
+  { icon: Settings, label: 'Configurações', path: '/empresa/configuracoes', ownerOnly: true, alwaysShow: true },
 ];
 
 export const EmpresaLayout: React.FC = () => {
