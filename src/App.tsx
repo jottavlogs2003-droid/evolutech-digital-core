@@ -168,6 +168,10 @@ const App = () => (
               <Route path="/empresa/pedidos" element={<Pedidos />} />
               <Route path="/empresa/caixa" element={<Caixa />} />
               <Route path="/empresa/relatorios" element={<Relatorios />} />
+              <Route path="/empresa/projetos" element={<Projetos />} />
+              <Route path="/empresa/documentos" element={<Documentos />} />
+              <Route path="/empresa/notificacoes" element={<Notificacoes />} />
+              <Route path="/empresa/modulos-custom" element={<ModulosCustom />} />
               
               {/* Dono Empresa Only */}
               <Route 
