@@ -52,6 +52,10 @@ import Pedidos from "./pages/empresa/Pedidos";
 import Caixa from "./pages/empresa/Caixa";
 import Relatorios from "./pages/empresa/Relatorios";
 import Personalizacao from "./pages/empresa/Personalizacao";
+import Projetos from "./pages/empresa/Projetos";
+import Documentos from "./pages/empresa/Documentos";
+import Notificacoes from "./pages/empresa/Notificacoes";
+import ModulosCustom from "./pages/empresa/ModulosCustom";
 
 const queryClient = new QueryClient();
 
@@ -164,6 +168,10 @@ const App = () => (
               <Route path="/empresa/pedidos" element={<Pedidos />} />
               <Route path="/empresa/caixa" element={<Caixa />} />
               <Route path="/empresa/relatorios" element={<Relatorios />} />
+              <Route path="/empresa/projetos" element={<Projetos />} />
+              <Route path="/empresa/documentos" element={<Documentos />} />
+              <Route path="/empresa/notificacoes" element={<Notificacoes />} />
+              <Route path="/empresa/modulos-custom" element={<ModulosCustom />} />
               
               {/* Dono Empresa Only */}
               <Route 
