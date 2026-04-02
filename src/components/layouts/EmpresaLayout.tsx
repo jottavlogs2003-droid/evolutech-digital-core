@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { usePwaManifest } from '@/hooks/usePwaManifest';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCompanyModules } from '@/hooks/useCompanyModules';
