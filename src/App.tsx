@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import AcceptInvite from "./pages/AcceptInvite";
 import NotFound from "./pages/NotFound";
 import LandingVendas from "./pages/LandingVendas";
+import Onboarding from "./pages/Onboarding";
 
 // Admin Evolutech pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -67,6 +68,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/vendas" element={<LandingVendas />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/aceitar-convite" element={<AcceptInvite />} />
             <Route path="/chat/:slug" element={<ChatbotPublic />} />
             

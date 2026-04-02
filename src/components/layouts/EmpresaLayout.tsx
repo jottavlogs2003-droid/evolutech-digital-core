@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { usePwaManifest } from '@/hooks/usePwaManifest';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCompanyModules } from '@/hooks/useCompanyModules';
@@ -69,6 +70,7 @@ const navItems: NavItem[] = [
 ];
 
 export const EmpresaLayout: React.FC = () => {
+  usePwaManifest();
   const { user, logout, company } = useAuth();
   const { activeCodes, isLoading: modulesLoading } = useCompanyModules();
   const navigate = useNavigate();
