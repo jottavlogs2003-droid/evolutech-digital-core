@@ -69,7 +69,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .maybeSingle();
 
       if (!roleData) {
-        return null;
+        // User exists but has no role — return a minimal user so we can redirect to onboarding
+        setCompany(null);
+        return {
+          id: userId,
+          email,
+          name: profile?.full_name || email,
+          role: 'NO_ROLE' as any,
+          createdAt: new Date(profile?.created_at || Date.now()),
+        };
       }
 
       const role = dbRoleToUserRole(roleData.role as DbRole);
@@ -113,7 +121,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       case 'FUNCIONARIO_EMPRESA':
         return '/empresa/app';
       default:
-        return '/login';
+        // Users without a role should go to onboarding to create their system
+        return '/onboarding';
     }
   }, [authState.user]);
 
