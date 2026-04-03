@@ -121,7 +121,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       case 'FUNCIONARIO_EMPRESA':
         return '/empresa/app';
       default:
-        return '/login';
+        // Users without a role should go to onboarding to create their system
+        return '/onboarding';
     }
   }, [authState.user]);
 

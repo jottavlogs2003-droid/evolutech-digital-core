@@ -227,6 +227,20 @@ const Login: React.FC = () => {
               {isSignup ? 'Fazer login' : 'Criar conta'}
             </button>
           </div>
+
+          {/* CTA to create own system */}
+          <div className="mt-4 pt-4 border-t border-border text-center">
+            <p className="text-sm text-muted-foreground mb-3">Quer criar seu próprio sistema?</p>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full border-foreground/20 hover:bg-foreground hover:text-background transition-all"
+              onClick={() => navigate('/onboarding')}
+            >
+              Criar meu sistema agora
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
         </div>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
