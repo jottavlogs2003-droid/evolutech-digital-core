@@ -70,6 +70,7 @@ const navItems: NavItem[] = [
   { icon: ScrollText, label: 'Auditoria', path: '/empresa/auditoria', moduleCode: 'auditoria', ownerOnly: true },
   { icon: GraduationCap, label: 'Treinamentos', path: '/empresa/treinamentos', moduleCode: 'treinamentos' },
   { icon: Box, label: 'Módulos Custom', path: '/empresa/modulos-custom', ownerOnly: true, alwaysShow: true },
+  { icon: Package, label: 'Módulos', path: '/empresa/modulos', ownerOnly: true, alwaysShow: true },
   { icon: Palette, label: 'Personalização', path: '/empresa/personalizacao', ownerOnly: true, alwaysShow: true },
   { icon: Settings, label: 'Configurações', path: '/empresa/configuracoes', ownerOnly: true, alwaysShow: true },
 ];
