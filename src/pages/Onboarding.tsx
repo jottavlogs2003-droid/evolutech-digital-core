@@ -472,7 +472,13 @@ const Onboarding: React.FC = () => {
           <div className="flex justify-between mt-8">
             <Button
               variant="outline"
-              onClick={() => step === 0 ? navigate('/') : setStep(step - 1)}
+              onClick={() => {
+                if (step === 0) {
+                  supabase.auth.signOut().then(() => navigate('/login'));
+                } else {
+                  setStep(step - 1);
+                }
+              }}
               className="border-border"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
