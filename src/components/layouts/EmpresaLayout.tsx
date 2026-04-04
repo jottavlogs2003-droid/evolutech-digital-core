@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { usePwaManifest } from '@/hooks/usePwaManifest';
+import { useAutoSyncModules } from '@/hooks/useAutoSyncModules';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCompanyModules } from '@/hooks/useCompanyModules';
@@ -69,12 +70,14 @@ const navItems: NavItem[] = [
   { icon: ScrollText, label: 'Auditoria', path: '/empresa/auditoria', moduleCode: 'auditoria', ownerOnly: true },
   { icon: GraduationCap, label: 'Treinamentos', path: '/empresa/treinamentos', moduleCode: 'treinamentos' },
   { icon: Box, label: 'Módulos Custom', path: '/empresa/modulos-custom', ownerOnly: true, alwaysShow: true },
+  { icon: Package, label: 'Módulos', path: '/empresa/modulos', ownerOnly: true, alwaysShow: true },
   { icon: Palette, label: 'Personalização', path: '/empresa/personalizacao', ownerOnly: true, alwaysShow: true },
   { icon: Settings, label: 'Configurações', path: '/empresa/configuracoes', ownerOnly: true, alwaysShow: true },
 ];
 
 export const EmpresaLayout: React.FC = () => {
   usePwaManifest();
+  useAutoSyncModules();
   const { user, logout, company } = useAuth();
   const { activeCodes, isLoading: modulesLoading } = useCompanyModules();
   const navigate = useNavigate();

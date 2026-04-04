@@ -56,6 +56,7 @@ import Projetos from "./pages/empresa/Projetos";
 import Documentos from "./pages/empresa/Documentos";
 import Notificacoes from "./pages/empresa/Notificacoes";
 import ModulosCustom from "./pages/empresa/ModulosCustom";
+import GerenciarModulos from "./pages/empresa/GerenciarModulos";
 
 const queryClient = new QueryClient();
 
@@ -172,6 +173,14 @@ const App = () => (
               <Route path="/empresa/documentos" element={<Documentos />} />
               <Route path="/empresa/notificacoes" element={<Notificacoes />} />
               <Route path="/empresa/modulos-custom" element={<ModulosCustom />} />
+              <Route 
+                path="/empresa/modulos" 
+                element={
+                  <AuthGuard allowedRoles={['DONO_EMPRESA']}>
+                    <GerenciarModulos />
+                  </AuthGuard>
+                } 
+              />
               
               {/* Dono Empresa Only */}
               <Route 
