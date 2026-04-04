@@ -76,6 +76,7 @@ const navItems: NavItem[] = [
 
 export const EmpresaLayout: React.FC = () => {
   usePwaManifest();
+  useAutoSyncModules();
   const { user, logout, company } = useAuth();
   const { activeCodes, isLoading: modulesLoading } = useCompanyModules();
   const navigate = useNavigate();
