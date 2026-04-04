@@ -173,6 +173,14 @@ const App = () => (
               <Route path="/empresa/documentos" element={<Documentos />} />
               <Route path="/empresa/notificacoes" element={<Notificacoes />} />
               <Route path="/empresa/modulos-custom" element={<ModulosCustom />} />
+              <Route 
+                path="/empresa/modulos" 
+                element={
+                  <AuthGuard allowedRoles={['DONO_EMPRESA']}>
+                    <GerenciarModulos />
+                  </AuthGuard>
+                } 
+              />
               
               {/* Dono Empresa Only */}
               <Route 
