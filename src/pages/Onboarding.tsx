@@ -472,7 +472,7 @@ const Onboarding: React.FC = () => {
           <div className="flex justify-between mt-8">
             <Button
               variant="outline"
-              onClick={() => step === 0 ? navigate('/') : setStep(step - 1)}
+              onClick={() => step === 0 ? navigate('/vendas') : setStep(step - 1)}
               className="border-border"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
