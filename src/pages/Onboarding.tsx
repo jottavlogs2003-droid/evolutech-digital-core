@@ -25,15 +25,22 @@ const NICHES = [
 ];
 
 const MODULES = [
-  { id: 'agenda', name: 'Agenda', desc: 'Agendamentos e horários' },
-  { id: 'clientes', name: 'Clientes', desc: 'Cadastro e histórico' },
-  { id: 'financeiro', name: 'Financeiro', desc: 'Contas e fluxo de caixa' },
-  { id: 'pedidos', name: 'Pedidos', desc: 'Vendas e entregas' },
-  { id: 'produtos', name: 'Produtos', desc: 'Catálogo e preços' },
-  { id: 'relatorios', name: 'Relatórios', desc: 'Análises e métricas' },
   { id: 'dashboard', name: 'Dashboard', desc: 'Visão geral em tempo real' },
-  { id: 'automacao', name: 'Automação de Atendimento', desc: 'WhatsApp e chatbot' },
-  { id: 'estoque', name: 'Controle de Estoque', desc: 'Entradas e saídas' },
+  { id: 'agendamentos', name: 'Agenda', desc: 'Agendamentos e horários' },
+  { id: 'clientes', name: 'CRM de Clientes', desc: 'Cadastro e histórico' },
+  { id: 'financeiro', name: 'Financeiro', desc: 'Contas, caixa e fluxo' },
+  { id: 'pedidos', name: 'Vendas e Pedidos', desc: 'Vendas e entregas' },
+  { id: 'produtos', name: 'Produtos', desc: 'Catálogo e preços' },
+  { id: 'estoque', name: 'Estoque', desc: 'Controle de entradas e saídas' },
+  { id: 'automacao', name: 'Automação', desc: 'Mensagens automáticas' },
+  { id: 'equipe', name: 'Equipe', desc: 'Usuários e permissões' },
+  { id: 'marketing', name: 'Marketing', desc: 'Leads e campanhas' },
+  { id: 'projetos', name: 'Projetos', desc: 'Tarefas e kanban' },
+  { id: 'suporte', name: 'Suporte', desc: 'Tickets de atendimento' },
+  { id: 'documentos', name: 'Documentos', desc: 'Arquivos e contratos' },
+  { id: 'notificacoes', name: 'Notificações', desc: 'Alertas do sistema' },
+  { id: 'auditoria', name: 'Auditoria', desc: 'Registro de ações' },
+  { id: 'configuracoes', name: 'Configurações', desc: 'Preferências gerais' },
 ];
 
 const STEPS = ['Cadastro', 'Nicho', 'Módulos', 'Personalização', 'Gerar'];
