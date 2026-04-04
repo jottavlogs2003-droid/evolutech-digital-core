@@ -175,24 +175,11 @@ const Onboarding: React.FC = () => {
         primary_color: hexToHsl(data.primaryColor),
       });
 
-      // 8. Activate modules — map onboarding IDs to DB module codes
-      const moduleCodeMap: Record<string, string> = {
-        agenda: 'agendamentos',
-        clientes: 'clientes',
-        financeiro: 'financeiro',
-        pedidos: 'pedidos',
-        produtos: 'produtos',
-        relatorios: 'relatorios',
-        dashboard: 'dashboard',
-        automacao: 'automacao_atendimento',
-        estoque: 'controle_estoque',
-      };
-      
-      const codes = data.modules.map(m => moduleCodeMap[m] || m);
+      // 8. Activate selected modules — codes match DB directly
       const { data: dbModules } = await supabase
         .from('modulos')
         .select('id, codigo')
-        .in('codigo', codes);
+        .in('codigo', data.modules);
 
       if (dbModules && dbModules.length > 0) {
         await supabase.from('empresa_modulos').insert(
