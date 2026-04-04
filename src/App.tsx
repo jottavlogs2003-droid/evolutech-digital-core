@@ -56,6 +56,7 @@ import Projetos from "./pages/empresa/Projetos";
 import Documentos from "./pages/empresa/Documentos";
 import Notificacoes from "./pages/empresa/Notificacoes";
 import ModulosCustom from "./pages/empresa/ModulosCustom";
+import GerenciarModulos from "./pages/empresa/GerenciarModulos";
 
 const queryClient = new QueryClient();
 
