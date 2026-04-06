@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -12,17 +13,27 @@ export interface CompanyModule {
   obrigatorio: boolean;
 }
 
+const mapCompanyModules = (data: any[]): CompanyModule[] => {
+  return data
+    .filter((item) => item.modulos)
+    .map((item) => ({
+      id: item.id,
+      codigo: item.modulos.codigo?.toLowerCase() || '',
+      nome: item.modulos.nome,
+      icone: item.modulos.icone,
+      is_core: Boolean(item.modulos.is_core),
+      ativo: Boolean(item.ativo),
+      obrigatorio: Boolean(item.obrigatorio),
+    }));
+};
+
 export const useCompanyModules = () => {
   const { user } = useAuth();
-  const [modules, setModules] = useState<CompanyModule[]>([]);
-  const [activeCodes, setActiveCodes] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const companyId = user?.tenantId;
 
-  const fetchModules = useCallback(async () => {
-    if (!user?.tenantId) {
-      setIsLoading(false);
-      return;
-    }
+  const fetchModules = useCallback(async (): Promise<CompanyModule[]> => {
+    if (!companyId) return [];
 
     try {
       const { data, error } = await supabase
@@ -39,55 +50,53 @@ export const useCompanyModules = () => {
             is_core
           )
         `)
-        .eq('empresa_id', user.tenantId)
+        .eq('empresa_id', companyId)
         .eq('ativo', true);
 
       if (error) {
         console.error('Error fetching company modules:', error);
-        setIsLoading(false);
-        return;
+        return [];
       }
 
-      if (data) {
-        const mappedModules: CompanyModule[] = data
-          .filter((item: any) => item.modulos)
-          .map((item: any) => ({
-            id: item.id,
-            codigo: item.modulos.codigo?.toLowerCase() || '',
-            nome: item.modulos.nome,
-            icone: item.modulos.icone,
-            is_core: false, // All modules are now available
-            ativo: item.ativo,
-            obrigatorio: false, // No mandatory modules
-          }));
-
-        setModules(mappedModules);
-        setActiveCodes(mappedModules.map(m => m.codigo));
-      }
+      return data ? mapCompanyModules(data) : [];
     } catch (err) {
       console.error('Error in useCompanyModules:', err);
-    } finally {
-      setIsLoading(false);
+      return [];
     }
-  }, [user?.tenantId]);
+  }, [companyId]);
 
-  useEffect(() => {
-    fetchModules();
-  }, [fetchModules]);
+  const {
+    data: modules = [],
+    isLoading,
+    isFetching,
+  } = useQuery({
+    queryKey: ['company-modules', companyId],
+    queryFn: fetchModules,
+    enabled: Boolean(companyId),
+    staleTime: 30_000,
+  });
+
+  const activeCodes = useMemo(
+    () => modules.map((module) => module.codigo),
+    [modules]
+  );
 
   const hasModule = useCallback((moduleCode: string): boolean => {
     return activeCodes.includes(moduleCode.toLowerCase());
   }, [activeCodes]);
 
-  const refreshModules = useCallback(() => {
-    setIsLoading(true);
-    fetchModules();
-  }, [fetchModules]);
+  const refreshModules = useCallback(async () => {
+    if (!companyId) return;
+
+    await queryClient.invalidateQueries({
+      queryKey: ['company-modules', companyId],
+    });
+  }, [companyId, queryClient]);
 
   return {
     modules,
     activeCodes,
-    isLoading,
+    isLoading: Boolean(companyId) ? isLoading || isFetching : false,
     hasModule,
     refreshModules,
   };
