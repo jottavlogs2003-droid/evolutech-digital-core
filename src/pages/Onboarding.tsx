@@ -111,30 +111,42 @@ const Onboarding: React.FC = () => {
   const handleGenerate = async () => {
     setIsLoading(true);
     try {
-      // 1. Sign up
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          emailRedirectTo: window.location.origin,
-          data: { full_name: data.fullName },
-        },
-      });
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('Erro ao criar conta');
+      // Check if user is already authenticated
+      const { data: sessionData } = await supabase.auth.getSession();
+      let userId: string;
 
-      // 2. Sign in immediately
-      const { error: loginError } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      });
-      if (loginError) throw loginError;
+      if (sessionData.session?.user) {
+        userId = sessionData.session.user.id;
+      } else {
+        // 1. Sign up
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: data.email,
+          password: data.password,
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: { full_name: data.fullName },
+          },
+        });
+        if (authError) throw authError;
+        if (!authData.user) throw new Error('Erro ao criar conta');
+        userId = authData.user.id;
 
-      // 3. Create company
+        // 2. Sign in immediately
+        const { error: loginError } = await supabase.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        });
+        if (loginError) throw loginError;
+      }
+
+      // 3. Generate company ID client-side to avoid SELECT permission issue
+      const companyId = crypto.randomUUID();
       const slug = data.companyName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
-      const { data: company, error: companyError } = await supabase
+      
+      const { error: companyError } = await supabase
         .from('companies')
         .insert({
+          id: companyId,
           name: data.companyName,
           slug,
           niche: data.niche,
@@ -144,38 +156,37 @@ const Onboarding: React.FC = () => {
             system_name: data.systemName,
             app_name: data.appName,
           },
-        })
-        .select('id')
-        .single();
+        });
       if (companyError) throw companyError;
 
       // 4. Upload logo
-      if (data.logoFile && company) {
+      if (data.logoFile) {
         const ext = data.logoFile.name.split('.').pop();
-        const path = `${company.id}/logo.${ext}`;
+        const path = `${companyId}/logo.${ext}`;
         await supabase.storage.from('company-logos').upload(path, data.logoFile, { upsert: true });
         const { data: urlData } = supabase.storage.from('company-logos').getPublicUrl(path);
-        await supabase.from('companies').update({ logo_url: urlData.publicUrl }).eq('id', company.id);
+        await supabase.from('companies').update({ logo_url: urlData.publicUrl }).eq('id', companyId);
       }
 
       // 5. Assign role
-      await supabase.from('user_roles').insert({
-        user_id: authData.user.id,
+      const { error: roleError } = await supabase.from('user_roles').insert({
+        user_id: userId,
         role: 'dono_empresa' as const,
-        company_id: company.id,
+        company_id: companyId,
       });
+      if (roleError) throw roleError;
 
       // 6. Update profile with company_id
-      await supabase.from('profiles').update({ company_id: company.id }).eq('id', authData.user.id);
+      await supabase.from('profiles').update({ company_id: companyId }).eq('id', userId);
 
       // 7. Create company theme
       await supabase.from('company_themes').insert({
-        company_id: company.id,
+        company_id: companyId,
         company_display_name: data.systemName,
         primary_color: hexToHsl(data.primaryColor),
       });
 
-      // 8. Activate selected modules — codes match DB directly
+      // 8. Activate selected modules
       const { data: dbModules } = await supabase
         .from('modulos')
         .select('id, codigo')
@@ -184,7 +195,7 @@ const Onboarding: React.FC = () => {
       if (dbModules && dbModules.length > 0) {
         await supabase.from('empresa_modulos').insert(
           dbModules.map(m => ({
-            empresa_id: company.id,
+            empresa_id: companyId,
             modulo_id: m.id,
             ativo: true,
           }))
@@ -192,13 +203,16 @@ const Onboarding: React.FC = () => {
       }
 
       toast.success('Sistema criado com sucesso!');
-      navigate('/empresa/dashboard');
+      
+      // Force refresh auth state before redirecting
+      window.location.href = '/empresa/dashboard';
     } catch (err: any) {
       const msg = err?.message || 'Erro ao criar sistema';
       if (msg.includes('already registered')) {
         toast.error('Este email já está cadastrado. Faça login.');
       } else {
         toast.error(msg);
+        console.error('Onboarding error:', err);
       }
     } finally {
       setIsLoading(false);
