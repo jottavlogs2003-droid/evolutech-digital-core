@@ -173,31 +173,38 @@ export const EmpresaLayout: React.FC = () => {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto p-4">
-          <ul className="space-y-2">
-            {filteredNavItems.map((item) => {
-              const isActive = location.pathname === item.path || 
-                              (item.path !== '/empresa/dashboard' && location.pathname.startsWith(item.path));
-              return (
-                <li key={item.path}>
-                  <button
-                    onClick={() => {
-                      navigate(item.path);
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={cn(
-                      'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
-                      isActive
-                        ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
-                        : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
-                    )}
-                  >
-                    <item.icon className={cn('h-5 w-5 flex-shrink-0', isCollapsed && 'mx-auto')} />
-                    {!isCollapsed && <span>{item.label}</span>}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+          {modulesLoading ? (
+            <div className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-muted-foreground">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              {!isCollapsed && <span>Carregando módulos...</span>}
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {filteredNavItems.map((item) => {
+                const isActive = location.pathname === item.path || 
+                                (item.path !== '/empresa/dashboard' && location.pathname.startsWith(item.path));
+                return (
+                  <li key={item.path}>
+                    <button
+                      onClick={() => {
+                        navigate(item.path);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={cn(
+                        'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
+                        isActive
+                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                          : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                      )}
+                    >
+                      <item.icon className={cn('h-5 w-5 flex-shrink-0', isCollapsed && 'mx-auto')} />
+                      {!isCollapsed && <span>{item.label}</span>}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </nav>
 
         {/* User section */}
