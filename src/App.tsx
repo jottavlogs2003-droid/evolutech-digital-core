@@ -57,6 +57,12 @@ import Documentos from "./pages/empresa/Documentos";
 import Notificacoes from "./pages/empresa/Notificacoes";
 import ModulosCustom from "./pages/empresa/ModulosCustom";
 import GerenciarModulos from "./pages/empresa/GerenciarModulos";
+import Estoque from "./pages/empresa/Estoque";
+import Automacao from "./pages/empresa/Automacao";
+import Marketing from "./pages/empresa/Marketing";
+import Integracoes from "./pages/empresa/Integracoes";
+import PagamentosEmpresa from "./pages/empresa/Pagamentos";
+import Auditoria from "./pages/empresa/Auditoria";
 
 const queryClient = new QueryClient();
 
