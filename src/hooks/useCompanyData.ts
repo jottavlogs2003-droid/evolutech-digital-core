@@ -143,7 +143,7 @@ export function useCompanyData<T extends { id: string }>(
 
       if (error) throw error;
 
-      toast({
+      toastRef.current({
         title: 'Sucesso',
         description: 'Registro criado com sucesso!',
       });
@@ -153,14 +153,14 @@ export function useCompanyData<T extends { id: string }>(
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
       console.error(`Error creating ${tableName}:`, err);
-      toast({
+      toastRef.current({
         title: 'Erro ao criar',
         description: errorMessage,
         variant: 'destructive',
       });
       return null;
     }
-  }, [companyId, tableName, fetchData, toast]);
+  }, [companyId, tableName, fetchData]);
 
   const update = useCallback(async (id: string, item: Record<string, unknown>): Promise<T | null> => {
     try {
@@ -173,7 +173,7 @@ export function useCompanyData<T extends { id: string }>(
 
       if (error) throw error;
 
-      toast({
+      toastRef.current({
         title: 'Sucesso',
         description: 'Registro atualizado com sucesso!',
       });
@@ -183,14 +183,14 @@ export function useCompanyData<T extends { id: string }>(
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
       console.error(`Error updating ${tableName}:`, err);
-      toast({
+      toastRef.current({
         title: 'Erro ao atualizar',
         description: errorMessage,
         variant: 'destructive',
       });
       return null;
     }
-  }, [tableName, fetchData, toast]);
+  }, [tableName, fetchData]);
 
   const remove = useCallback(async (id: string): Promise<boolean> => {
     try {
@@ -201,7 +201,7 @@ export function useCompanyData<T extends { id: string }>(
 
       if (error) throw error;
 
-      toast({
+      toastRef.current({
         title: 'Sucesso',
         description: 'Registro excluído com sucesso!',
       });
@@ -211,14 +211,14 @@ export function useCompanyData<T extends { id: string }>(
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
       console.error(`Error deleting ${tableName}:`, err);
-      toast({
+      toastRef.current({
         title: 'Erro ao excluir',
         description: errorMessage,
         variant: 'destructive',
       });
       return false;
     }
-  }, [tableName, fetchData, toast]);
+  }, [tableName, fetchData]);
 
   return {
     data,
