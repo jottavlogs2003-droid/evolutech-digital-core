@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -44,6 +44,11 @@ export function useCompanyData<T extends { id: string }>(
 ): UseCompanyDataResult<T> {
   const { user } = useAuth();
   const { toast } = useToast();
+  const toastRef = useRef(toast);
+  toastRef.current = toast;
+  const searchFieldsRef = useRef(searchFields);
+  searchFieldsRef.current = searchFields;
+
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,31 +73,26 @@ export function useCompanyData<T extends { id: string }>(
     setError(null);
 
     try {
-      // Build query - use any to avoid complex type issues with dynamic table selection
       let query = (supabase
         .from(tableName) as any)
         .select('*', { count: 'exact' })
         .eq('company_id', companyId);
 
-      // Apply search filter
-      if (filters.search && searchFields.length > 0) {
-        const searchConditions = searchFields
+      if (filters.search && searchFieldsRef.current.length > 0) {
+        const searchConditions = searchFieldsRef.current
           .map(field => `${field}.ilike.%${filters.search}%`)
           .join(',');
         query = query.or(searchConditions);
       }
 
-      // Apply status filter
       if (filters.status && filters.status !== 'all') {
         query = query.eq('status', filters.status);
       }
 
-      // Apply is_active filter if present
       if (filters.is_active !== undefined && filters.is_active !== 'all') {
         query = query.eq('is_active', filters.is_active === 'true');
       }
 
-      // Apply date filters
       if (filters.dateFrom) {
         query = query.gte('created_at', filters.dateFrom);
       }
@@ -100,11 +100,9 @@ export function useCompanyData<T extends { id: string }>(
         query = query.lte('created_at', filters.dateTo);
       }
 
-      // Apply ordering
       const orderColumn = pagination.orderBy || defaultOrderBy;
       query = query.order(orderColumn, { ascending: pagination.orderDirection === 'asc' });
 
-      // Apply pagination
       const from = (pagination.page - 1) * pagination.pageSize;
       const to = from + pagination.pageSize - 1;
       query = query.range(from, to);
@@ -119,7 +117,7 @@ export function useCompanyData<T extends { id: string }>(
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
       console.error(`Error fetching ${tableName}:`, err);
       setError(errorMessage);
-      toast({
+      toastRef.current({
         title: 'Erro ao carregar dados',
         description: errorMessage,
         variant: 'destructive',
@@ -127,7 +125,7 @@ export function useCompanyData<T extends { id: string }>(
     } finally {
       setLoading(false);
     }
-  }, [companyId, tableName, pagination, filters, searchFields, defaultOrderBy, toast]);
+  }, [companyId, tableName, pagination, filters, defaultOrderBy]);
 
   useEffect(() => {
     fetchData();
@@ -145,7 +143,7 @@ export function useCompanyData<T extends { id: string }>(
 
       if (error) throw error;
 
-      toast({
+      toastRef.current({
         title: 'Sucesso',
         description: 'Registro criado com sucesso!',
       });
@@ -155,14 +153,14 @@ export function useCompanyData<T extends { id: string }>(
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
       console.error(`Error creating ${tableName}:`, err);
-      toast({
+      toastRef.current({
         title: 'Erro ao criar',
         description: errorMessage,
         variant: 'destructive',
       });
       return null;
     }
-  }, [companyId, tableName, fetchData, toast]);
+  }, [companyId, tableName, fetchData]);
 
   const update = useCallback(async (id: string, item: Record<string, unknown>): Promise<T | null> => {
     try {
@@ -175,7 +173,7 @@ export function useCompanyData<T extends { id: string }>(
 
       if (error) throw error;
 
-      toast({
+      toastRef.current({
         title: 'Sucesso',
         description: 'Registro atualizado com sucesso!',
       });
@@ -185,14 +183,14 @@ export function useCompanyData<T extends { id: string }>(
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
       console.error(`Error updating ${tableName}:`, err);
-      toast({
+      toastRef.current({
         title: 'Erro ao atualizar',
         description: errorMessage,
         variant: 'destructive',
       });
       return null;
     }
-  }, [tableName, fetchData, toast]);
+  }, [tableName, fetchData]);
 
   const remove = useCallback(async (id: string): Promise<boolean> => {
     try {
@@ -203,7 +201,7 @@ export function useCompanyData<T extends { id: string }>(
 
       if (error) throw error;
 
-      toast({
+      toastRef.current({
         title: 'Sucesso',
         description: 'Registro excluído com sucesso!',
       });
@@ -213,14 +211,14 @@ export function useCompanyData<T extends { id: string }>(
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
       console.error(`Error deleting ${tableName}:`, err);
-      toast({
+      toastRef.current({
         title: 'Erro ao excluir',
         description: errorMessage,
         variant: 'destructive',
       });
       return false;
     }
-  }, [tableName, fetchData, toast]);
+  }, [tableName, fetchData]);
 
   return {
     data,
