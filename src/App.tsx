@@ -57,6 +57,12 @@ import Documentos from "./pages/empresa/Documentos";
 import Notificacoes from "./pages/empresa/Notificacoes";
 import ModulosCustom from "./pages/empresa/ModulosCustom";
 import GerenciarModulos from "./pages/empresa/GerenciarModulos";
+import Estoque from "./pages/empresa/Estoque";
+import Automacao from "./pages/empresa/Automacao";
+import Marketing from "./pages/empresa/Marketing";
+import Integracoes from "./pages/empresa/Integracoes";
+import PagamentosEmpresa from "./pages/empresa/Pagamentos";
+import Auditoria from "./pages/empresa/Auditoria";
 
 const queryClient = new QueryClient();
 
@@ -173,6 +179,19 @@ const App = () => (
               <Route path="/empresa/documentos" element={<Documentos />} />
               <Route path="/empresa/notificacoes" element={<Notificacoes />} />
               <Route path="/empresa/modulos-custom" element={<ModulosCustom />} />
+              <Route path="/empresa/estoque" element={<Estoque />} />
+              <Route path="/empresa/automacao" element={<Automacao />} />
+              <Route path="/empresa/marketing" element={<Marketing />} />
+              <Route path="/empresa/integracoes" element={<Integracoes />} />
+              <Route path="/empresa/pagamentos" element={<PagamentosEmpresa />} />
+              <Route 
+                path="/empresa/auditoria" 
+                element={
+                  <AuthGuard allowedRoles={['DONO_EMPRESA']}>
+                    <Auditoria />
+                  </AuthGuard>
+                } 
+              />
               <Route 
                 path="/empresa/modulos" 
                 element={

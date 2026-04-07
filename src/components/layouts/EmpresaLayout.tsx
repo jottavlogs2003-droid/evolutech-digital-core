@@ -65,6 +65,8 @@ const navItems: NavItem[] = [
   { icon: FolderKanban, label: 'Projetos', path: '/empresa/projetos', moduleCode: 'projetos' },
   { icon: HeadphonesIcon, label: 'Suporte', path: '/empresa/suporte', moduleCode: 'suporte', alwaysShow: true },
   { icon: FileText, label: 'Documentos', path: '/empresa/documentos', moduleCode: 'documentos' },
+  { icon: Plug, label: 'Integrações', path: '/empresa/integracoes', moduleCode: 'integracoes', ownerOnly: true },
+  { icon: CreditCard, label: 'Pagamentos', path: '/empresa/pagamentos', moduleCode: 'pagamentos', ownerOnly: true },
   { icon: Bell, label: 'Notificações', path: '/empresa/notificacoes', moduleCode: 'notificacoes', alwaysShow: true },
   { icon: BarChart3, label: 'Relatórios', path: '/empresa/relatorios', moduleCode: 'relatorios', ownerOnly: true },
   { icon: ScrollText, label: 'Auditoria', path: '/empresa/auditoria', moduleCode: 'auditoria', ownerOnly: true },
