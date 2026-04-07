@@ -179,6 +179,19 @@ const App = () => (
               <Route path="/empresa/documentos" element={<Documentos />} />
               <Route path="/empresa/notificacoes" element={<Notificacoes />} />
               <Route path="/empresa/modulos-custom" element={<ModulosCustom />} />
+              <Route path="/empresa/estoque" element={<Estoque />} />
+              <Route path="/empresa/automacao" element={<Automacao />} />
+              <Route path="/empresa/marketing" element={<Marketing />} />
+              <Route path="/empresa/integracoes" element={<Integracoes />} />
+              <Route path="/empresa/pagamentos" element={<PagamentosEmpresa />} />
+              <Route 
+                path="/empresa/auditoria" 
+                element={
+                  <AuthGuard allowedRoles={['DONO_EMPRESA']}>
+                    <Auditoria />
+                  </AuthGuard>
+                } 
+              />
               <Route 
                 path="/empresa/modulos" 
                 element={
