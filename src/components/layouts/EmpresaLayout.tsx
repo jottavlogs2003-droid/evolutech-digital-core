@@ -195,7 +195,7 @@ export const EmpresaLayout: React.FC = () => {
                       className={cn(
                         'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
                         isActive
-                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
                           : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
                       )}
                     >

@@ -45,8 +45,8 @@ export const Logo: React.FC<LogoProps> = ({
 
   return (
     <div className={cn('flex items-center gap-2.5', className)}>
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground">
-        <span className="text-sm font-black text-background tracking-tight">N</span>
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary glow-btn">
+        <span className="text-sm font-black text-primary-foreground tracking-tight">N</span>
       </div>
       {showText && (
         <div className="flex flex-col leading-none">

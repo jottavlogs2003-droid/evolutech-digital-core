@@ -193,7 +193,7 @@ const Login: React.FC = () => {
             <Button
               type="submit"
               size="lg"
-              className="w-full bg-foreground text-background hover:bg-foreground/90 font-semibold"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold glow-btn"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -222,7 +222,7 @@ const Login: React.FC = () => {
                 setPassword('');
                 setConfirmPassword('');
               }}
-              className="text-foreground hover:underline font-medium"
+              className="text-primary hover:underline font-medium"
             >
               {isSignup ? 'Fazer login' : 'Criar conta'}
             </button>
@@ -234,7 +234,7 @@ const Login: React.FC = () => {
             <Button
               type="button"
               variant="outline"
-              className="w-full border-foreground/20 hover:bg-foreground hover:text-background transition-all"
+              className="w-full border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all"
               onClick={() => navigate('/onboarding')}
             >
               Criar meu sistema agora
