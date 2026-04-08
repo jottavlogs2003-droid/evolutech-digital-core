@@ -436,7 +436,7 @@ const LandingVendas = () => {
               <motion.div key={i} variants={fadeInUp}>
                 <div className={`h-full rounded-2xl p-8 ${
                   plan.highlight 
-                    ? 'border-2 border-foreground bg-card' 
+                    ? 'border-2 border-primary bg-card shadow-glow' 
                     : 'border border-border'
                 }`}>
                   {plan.highlight && (
@@ -456,7 +456,7 @@ const LandingVendas = () => {
                     ))}
                   </ul>
                   <Button 
-                    className={`w-full ${plan.highlight ? 'bg-foreground text-background hover:bg-foreground/90' : ''}`}
+                    className={`w-full ${plan.highlight ? 'bg-primary text-primary-foreground hover:bg-primary/90 glow-btn' : ''}`}
                     variant={plan.highlight ? 'default' : 'outline'}
                     onClick={openWhatsApp}
                   >
@@ -490,7 +490,7 @@ const LandingVendas = () => {
             
             <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/login">
-                <Button size="lg" className="bg-foreground text-background hover:bg-foreground/90 text-base px-8 py-6 font-semibold">
+                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-base px-8 py-6 font-semibold glow-btn">
                   Criar meu sistema
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
