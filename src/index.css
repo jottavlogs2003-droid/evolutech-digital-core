@@ -6,17 +6,17 @@
 
 @layer base {
   :root {
-    --background: 0 0% 3%;
+    --background: 0 0% 4%;
     --foreground: 0 0% 98%;
 
-    --card: 0 0% 6%;
+    --card: 0 0% 7%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 6%;
+    --popover: 0 0% 7%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 3%;
+    --primary: 263 84% 57%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 98%;
@@ -24,42 +24,42 @@
     --muted: 0 0% 10%;
     --muted-foreground: 0 0% 55%;
 
-    --accent: 0 0% 18%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 258 90% 66%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 14%;
-    --input: 0 0% 14%;
-    --ring: 0 0% 50%;
+    --border: 260 20% 14%;
+    --input: 260 20% 14%;
+    --ring: 263 84% 57%;
 
     --radius: 0.625rem;
 
-    /* Custom tokens - monochrome premium */
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(0 0% 70%) 100%);
+    /* Custom tokens - purple neon premium */
+    --gradient-primary: linear-gradient(135deg, hsl(263 84% 57%) 0%, hsl(258 90% 66%) 100%);
     --gradient-dark: linear-gradient(180deg, hsl(0 0% 4%) 0%, hsl(0 0% 2%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 8%) 0%, hsl(0 0% 5%) 100%);
-    --gradient-glow: radial-gradient(ellipse at center, hsl(0 0% 100% / 0.06) 0%, transparent 70%);
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 8%) 0%, hsl(260 10% 6%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(263 84% 57% / 0.08) 0%, transparent 70%);
     
-    --shadow-glow: 0 0 80px -20px hsl(0 0% 100% / 0.15);
+    --shadow-glow: 0 0 80px -20px hsl(263 84% 57% / 0.25);
     --shadow-card: 0 4px 24px -4px hsl(0 0% 0% / 0.6);
     --shadow-elevated: 0 8px 32px -8px hsl(0 0% 0% / 0.8);
 
     --sidebar-background: 0 0% 4%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 0 0% 3%;
-    --sidebar-accent: 0 0% 12%;
+    --sidebar-primary: 263 84% 57%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 260 20% 14%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 14%;
-    --sidebar-ring: 0 0% 50%;
+    --sidebar-border: 260 20% 14%;
+    --sidebar-ring: 263 84% 57%;
 
     /* Role colors */
-    --super-admin: 0 0% 100%;
-    --admin-evolutech: 0 0% 80%;
-    --client-admin: 0 0% 70%;
-    --employee: 0 0% 60%;
+    --super-admin: 263 84% 57%;
+    --admin-evolutech: 258 90% 66%;
+    --client-admin: 263 70% 50%;
+    --employee: 258 50% 55%;
   }
 }
 
@@ -131,7 +131,16 @@
 
   .text-gradient {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(0 0% 60%) 100%);
+    background-image: linear-gradient(135deg, hsl(263 84% 57%) 0%, hsl(258 90% 76%) 100%);
+  }
+
+  .glow-btn {
+    box-shadow: 0 0 20px -4px hsl(263 84% 57% / 0.4);
+    transition: box-shadow 0.3s;
+  }
+
+  .glow-btn:hover {
+    box-shadow: 0 0 30px -2px hsl(263 84% 57% / 0.6);
   }
 
   .animate-float {
