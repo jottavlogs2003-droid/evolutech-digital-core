@@ -105,7 +105,7 @@ const LandingVendas = () => {
       {/* WhatsApp */}
       <button
         onClick={openWhatsApp}
-        className="fixed bottom-6 right-6 z-50 bg-foreground hover:bg-foreground/90 text-background p-4 rounded-full shadow-elevated transition-all hover:scale-110"
+        className="fixed bottom-6 right-6 z-50 bg-primary hover:bg-primary/90 text-primary-foreground p-4 rounded-full shadow-elevated transition-all hover:scale-110 glow-btn"
         aria-label="WhatsApp"
       >
         <MessageCircle className="w-6 h-6" />
@@ -120,7 +120,7 @@ const LandingVendas = () => {
             <a href="#como-funciona" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Como Funciona</a>
             <a href="#planos" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Planos</a>
             <Link to="/login">
-              <Button variant="outline" size="sm" className="border-foreground/20 text-foreground hover:bg-foreground hover:text-background">
+              <Button variant="outline" size="sm" className="border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground">
                 Área do Cliente
               </Button>
             </Link>
@@ -179,7 +179,7 @@ const LandingVendas = () => {
               <Link to="/onboarding">
                 <Button 
                   size="lg" 
-                  className="bg-foreground text-background hover:bg-foreground/90 text-base px-8 py-6 font-semibold"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 text-base px-8 py-6 font-semibold glow-btn"
                 >
                   Criar meu sistema agora
                   <ArrowRight className="ml-2 w-5 h-5" />
