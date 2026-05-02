@@ -42,6 +42,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin-evolutech' },
+  { icon: Users, label: 'Gestão de Clientes', path: '/admin-evolutech/clientes' },
   { icon: Building2, label: 'Empresas', path: '/admin-evolutech/empresas' },
   { icon: Blocks, label: 'Sistemas Base', path: '/admin-evolutech/sistemas-base' },
   { icon: Package, label: 'Módulos', path: '/admin-evolutech/modulos' },

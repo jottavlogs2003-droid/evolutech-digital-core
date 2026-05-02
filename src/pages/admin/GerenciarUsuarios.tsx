@@ -622,19 +622,42 @@ const GerenciarUsuarios: React.FC = () => {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem disabled>
-                                <Mail className="mr-2 h-4 w-4" />
-                                Enviar E-mail
-                              </DropdownMenuItem>
-                              <DropdownMenuItem disabled>
+                              <DropdownMenuItem onClick={async () => {
+                                const pwd = window.prompt(`Nova senha para ${user.email} (mín. 6 caracteres):`);
+                                if (!pwd) return;
+                                if (pwd.length < 6) { toast.error('Senha muito curta'); return; }
+                                const { data, error } = await supabase.functions.invoke('admin-user-actions', {
+                                  body: { action: 'reset_password', user_id: user.id, new_password: pwd },
+                                });
+                                if (error || data?.error) toast.error((data?.error || error?.message) ?? 'Erro');
+                                else toast.success('Senha redefinida');
+                              }}>
                                 <Key className="mr-2 h-4 w-4" />
                                 Redefinir Senha
                               </DropdownMenuItem>
+                              <DropdownMenuItem onClick={async () => {
+                                const action = user.is_active ? 'block_user' : 'unblock_user';
+                                const { data, error } = await supabase.functions.invoke('admin-user-actions', {
+                                  body: { action, user_id: user.id },
+                                });
+                                if (error || data?.error) toast.error((data?.error || error?.message) ?? 'Erro');
+                                else { toast.success(user.is_active ? 'Bloqueado' : 'Desbloqueado'); fetchUsers(); }
+                              }}>
+                                <UserX className="mr-2 h-4 w-4" />
+                                {user.is_active ? 'Bloquear' : 'Desbloquear'}
+                              </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               {isSuperAdmin && user.id !== currentUser?.id && (
-                                <DropdownMenuItem 
+                                <DropdownMenuItem
                                   className="text-destructive"
-                                  disabled
+                                  onClick={async () => {
+                                    if (!window.confirm(`Excluir usuário ${user.email}? Esta ação é irreversível.`)) return;
+                                    const { data, error } = await supabase.functions.invoke('admin-user-actions', {
+                                      body: { action: 'delete_user', user_id: user.id },
+                                    });
+                                    if (error || data?.error) toast.error((data?.error || error?.message) ?? 'Erro');
+                                    else { toast.success('Usuário excluído'); fetchUsers(); }
+                                  }}
                                 >
                                   <Trash2 className="mr-2 h-4 w-4" />
                                   Excluir Usuário
