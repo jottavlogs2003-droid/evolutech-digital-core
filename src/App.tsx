@@ -24,6 +24,7 @@ import GestaoSistemasBase from "./pages/admin/GestaoSistemasBase";
 import GatewaysPagamento from "./pages/admin/GatewaysPagamento";
 import WhatsAppAutomacao from "./pages/admin/WhatsAppAutomacao";
 import GerenciarUsuarios from "./pages/admin/GerenciarUsuarios";
+import AdminClientes from "./pages/admin/AdminClientes";
 import ChatbotsManager from "./pages/admin/ChatbotsManager";
 import SystemVerification from "./pages/admin/SystemVerification";
 import TemaGlobal from "./pages/admin/TemaGlobal";
@@ -103,6 +104,7 @@ const App = () => (
               <Route path="/admin-evolutech" element={<AdminDashboard />} />
               <Route path="/admin-evolutech/operacional" element={<AdminDashboard />} />
               <Route path="/admin-evolutech/empresas" element={<Empresas />} />
+              <Route path="/admin-evolutech/clientes" element={<AdminClientes />} />
               <Route path="/admin-evolutech/sistemas-base" element={<GestaoSistemasBase />} />
               <Route path="/admin-evolutech/modulos" element={<Modulos />} />
               <Route path="/admin-evolutech/usuarios" element={<Usuarios />} />
